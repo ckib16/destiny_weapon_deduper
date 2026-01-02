@@ -166,7 +166,7 @@ export class InventoryAPI {
    * Get user's Destiny memberships (to find their primary membership)
    */
   async getMemberships(accessToken: string): Promise<DestinyMembership[]> {
-    const url = `${BUNGIE_API_BASE}/Destiny2/GetMembershipsForCurrentUser/`
+    const url = `${BUNGIE_API_BASE}/User/GetMembershipsForCurrentUser/`
 
     const response = await fetch(url, {
       headers: {
