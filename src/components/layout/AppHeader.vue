@@ -1,0 +1,44 @@
+<template>
+  <header class="bg-gray-800 border-b border-gray-700">
+    <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+      <RouterLink to="/" class="text-2xl font-bold text-white hover:text-gray-300 transition">
+        D3 Deduper
+      </RouterLink>
+
+      <nav class="flex items-center gap-6">
+        <RouterLink
+          v-if="authStore.isAuthenticated"
+          to="/weapons"
+          class="text-gray-300 hover:text-white transition"
+        >
+          Weapons
+        </RouterLink>
+
+        <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
+          <span class="text-sm text-gray-400">
+            {{ authStore.user?.displayName || 'Guardian' }}
+          </span>
+          <button
+            @click="logout"
+            class="text-sm text-red-400 hover:text-red-300 transition"
+          >
+            Logout
+          </button>
+        </div>
+      </nav>
+    </div>
+  </header>
+</template>
+
+<script setup lang="ts">
+import { RouterLink, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const logout = () => {
+  authStore.clearAuth()
+  router.push('/')
+}
+</script>
