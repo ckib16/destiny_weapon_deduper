@@ -2,6 +2,13 @@
   <div>
     <h1 class="text-3xl font-bold mb-6">Your Weapons</h1>
 
+    <!-- Debug info -->
+    <div class="mb-4 p-4 bg-gray-800 rounded text-xs">
+      <p>Auth: {{ authStore.isAuthenticated ? 'Yes' : 'No' }}</p>
+      <p>Memberships loaded: {{ authStore.destinyMemberships.length }}</p>
+      <p>Selected: {{ authStore.selectedMembership?.displayName || 'None' }}</p>
+    </div>
+
     <div v-if="weaponsStore.loading" class="text-center py-12">
       <LoadingSpinner />
       <p class="mt-4 text-gray-400">Loading your arsenal...</p>
