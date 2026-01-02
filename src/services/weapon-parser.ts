@@ -74,6 +74,11 @@ export class WeaponParser {
       }
       hasDefinitionCount++
 
+      // Log first few tierTypes to see what we're getting
+      if (hasDefinitionCount <= 5) {
+        console.log(`[Parser] Sample weapon: ${weaponDef.displayProperties?.name}, tierType: ${weaponDef.tierType}, itemType: ${weaponDef.itemType}`)
+      }
+
       // Filter for legendary weapons (and exotic for testing)
       if (weaponDef.tierType !== TierType.Superior && weaponDef.tierType !== TierType.Exotic) {
         continue
