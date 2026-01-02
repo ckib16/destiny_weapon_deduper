@@ -30,13 +30,22 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useWeaponsStore } from '@/stores/weapons'
+import { useAuthStore } from '@/stores/auth'
 import WeaponList from '@/components/weapons/WeaponList.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
 const weaponsStore = useWeaponsStore()
+const authStore = useAuthStore()
 
 const loadWeapons = async () => {
+  // Ensure memberships are loaded first
+  if (authStore.destinyMemberships.length === 0) {
+    console.log('Loading Destiny memberships...')
+    await authStore.loadDestinyMemberships()
+  }
+
+  // Now load weapons
   await weaponsStore.loadWeapons()
 }
 
