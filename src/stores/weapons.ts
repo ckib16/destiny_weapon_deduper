@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAuthStore } from './auth'
 import { inventoryAPI } from '@/api/inventory'
 import { weaponParser } from '@/services/weapon-parser'
+import { buildDedupedWeapon } from '@/services/deduplication'
 import type { DedupedWeapon } from '@/models/deduped-weapon'
 import type { WeaponInstance } from '@/models/weapon-instance'
 
@@ -50,26 +51,14 @@ export const useWeaponsStore = defineStore('weapons', () => {
 
       console.log(`Found ${parsedWeapons.length} weapons`)
 
-      // Group weapons by hash for basic deduplication
+      // Group weapons by hash for deduplication
       const grouped = weaponParser.groupWeaponsByHash(parsedWeapons)
 
-      // Create simple deduped weapon entries (full deduplication in Phase 4)
+      // Build deduped weapon entries with perk matrices
       const dedupedWeapons: DedupedWeapon[] = []
 
       for (const [weaponHash, instances] of grouped) {
-        const weaponName = weaponParser.getWeaponName(weaponHash)
-        const weaponIcon = weaponParser.getWeaponIcon(weaponHash)
-
-        dedupedWeapons.push({
-          weaponHash,
-          weaponName,
-          weaponIcon,
-          perkMatrix: [], // Will be populated in Phase 4
-          instances,
-          totalPerksOwned: 0, // Will be calculated in Phase 4
-          totalPerksPossible: 0, // Will be calculated in Phase 4
-          completionPercentage: 0 // Will be calculated in Phase 4
-        })
+        dedupedWeapons.push(buildDedupedWeapon(weaponHash, instances))
       }
 
       // Sort by weapon name
