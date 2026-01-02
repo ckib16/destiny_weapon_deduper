@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { bungieAuth } from '@/api/auth'
+import { inventoryAPI, type DestinyMembership } from '@/api/inventory'
 import type { BungieOAuthTokens, BungieUser } from '@/api/types'
 
 interface StoredTokens {
@@ -15,6 +16,8 @@ export const useAuthStore = defineStore('auth', () => {
   const expiresAt = ref<number | null>(null)
   const membershipId = ref<string | null>(null)
   const user = ref<BungieUser | null>(null)
+  const destinyMemberships = ref<DestinyMembership[]>([])
+  const selectedMembership = ref<DestinyMembership | null>(null)
 
   // Computed
   const isAuthenticated = computed(() => {
@@ -91,13 +94,50 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function loadDestinyMemberships() {
+    // Try to load from storage first
+    const storedMemberships = localStorage.getItem('destiny_memberships')
+    if (storedMemberships) {
+      try {
+        const memberships = JSON.parse(storedMemberships)
+        destinyMemberships.value = memberships
+        // Select first membership by default
+        if (memberships.length > 0 && !selectedMembership.value) {
+          selectedMembership.value = memberships[0]
+        }
+        return
+      } catch (err) {
+        console.error('Failed to parse stored memberships:', err)
+      }
+    }
+
+    // If not in storage or invalid, fetch from API
+    if (accessToken.value) {
+      try {
+        const memberships = await inventoryAPI.getMemberships(accessToken.value)
+        destinyMemberships.value = memberships
+        localStorage.setItem('destiny_memberships', JSON.stringify(memberships))
+
+        // Select first membership by default (usually the cross-save primary)
+        if (memberships.length > 0) {
+          selectedMembership.value = memberships[0]
+        }
+      } catch (err) {
+        console.error('Failed to fetch Destiny memberships:', err)
+      }
+    }
+  }
+
   function clearAuth() {
     accessToken.value = null
     expiresAt.value = null
     membershipId.value = null
     user.value = null
+    destinyMemberships.value = []
+    selectedMembership.value = null
     localStorage.removeItem('bungie_tokens')
     localStorage.removeItem('bungie_user')
+    localStorage.removeItem('destiny_memberships')
   }
 
   function initiateLogin() {
@@ -109,6 +149,7 @@ export const useAuthStore = defineStore('auth', () => {
       const tokens = await bungieAuth.handleCallback(code, state)
       setTokens(tokens)
       await loadUser()
+      await loadDestinyMemberships()
     } catch (err) {
       clearAuth()
       throw err
@@ -120,16 +161,22 @@ export const useAuthStore = defineStore('auth', () => {
   if (isAuthenticated.value && !user.value) {
     loadUser()
   }
+  if (isAuthenticated.value && destinyMemberships.value.length === 0) {
+    loadDestinyMemberships()
+  }
 
   return {
     accessToken,
     expiresAt,
     membershipId,
     user,
+    destinyMemberships,
+    selectedMembership,
     isAuthenticated,
     setTokens,
     setUser,
     loadUser,
+    loadDestinyMemberships,
     clearAuth,
     initiateLogin,
     handleCallback
