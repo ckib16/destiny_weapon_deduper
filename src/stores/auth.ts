@@ -95,36 +95,48 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function loadDestinyMemberships() {
+    console.log('[Auth] loadDestinyMemberships called')
+    console.log('[Auth] Access token exists:', !!accessToken.value)
+
     // Try to load from storage first
     const storedMemberships = localStorage.getItem('destiny_memberships')
     if (storedMemberships) {
+      console.log('[Auth] Found stored memberships')
       try {
         const memberships = JSON.parse(storedMemberships)
         destinyMemberships.value = memberships
+        console.log('[Auth] Loaded memberships from storage:', memberships.length)
         // Select first membership by default
         if (memberships.length > 0 && !selectedMembership.value) {
           selectedMembership.value = memberships[0]
+          console.log('[Auth] Selected membership:', memberships[0].displayName)
         }
         return
       } catch (err) {
-        console.error('Failed to parse stored memberships:', err)
+        console.error('[Auth] Failed to parse stored memberships:', err)
       }
     }
 
     // If not in storage or invalid, fetch from API
     if (accessToken.value) {
+      console.log('[Auth] Fetching memberships from API...')
       try {
         const memberships = await inventoryAPI.getMemberships(accessToken.value)
+        console.log('[Auth] API returned memberships:', memberships.length)
         destinyMemberships.value = memberships
         localStorage.setItem('destiny_memberships', JSON.stringify(memberships))
 
         // Select first membership by default (usually the cross-save primary)
         if (memberships.length > 0) {
           selectedMembership.value = memberships[0]
+          console.log('[Auth] Selected membership:', memberships[0].displayName)
         }
       } catch (err) {
-        console.error('Failed to fetch Destiny memberships:', err)
+        console.error('[Auth] Failed to fetch Destiny memberships:', err)
+        console.error('[Auth] Error details:', err)
       }
+    } else {
+      console.warn('[Auth] No access token available for fetching memberships')
     }
   }
 

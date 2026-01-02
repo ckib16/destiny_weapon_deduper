@@ -3,10 +3,16 @@
     <h1 class="text-3xl font-bold mb-6">Your Weapons</h1>
 
     <!-- Debug info -->
-    <div class="mb-4 p-4 bg-gray-800 rounded text-xs">
+    <div class="mb-4 p-4 bg-gray-800 rounded text-xs space-y-2">
       <p>Auth: {{ authStore.isAuthenticated ? 'Yes' : 'No' }}</p>
       <p>Memberships loaded: {{ authStore.destinyMemberships.length }}</p>
       <p>Selected: {{ authStore.selectedMembership?.displayName || 'None' }}</p>
+      <button
+        @click="authStore.loadDestinyMemberships()"
+        class="px-3 py-1 bg-yellow-600 hover:bg-yellow-700 rounded text-xs"
+      >
+        Manually Load Memberships (check console)
+      </button>
     </div>
 
     <div v-if="weaponsStore.loading" class="text-center py-12">
