@@ -24,7 +24,11 @@ export interface DestinyInventoryItemDefinition extends ManifestDefinition {
   itemTypeDisplayName: string
   itemType: number
   itemSubType: number
-  tierType: number
+  inventory?: {
+    tierType: number
+    tierTypeName: string
+    bucketTypeHash: number
+  }
   sockets?: {
     socketEntries: Array<{
       socketTypeHash: number
