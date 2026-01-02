@@ -37,6 +37,8 @@ export const WEAPON_BUCKET_HASHES = {
   KINETIC_WEAPONS: 1498876634,
   ENERGY_WEAPONS: 2465295065,
   POWER_WEAPONS: 953998645,
+  GENERAL: 138197802, // General inventory bucket
+  LOST_ITEMS: 215593132, // Postmaster/Lost Items
 }
 
 // Item tier types
