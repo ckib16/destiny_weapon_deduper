@@ -44,6 +44,13 @@ export class WeaponParser {
 
     console.log(`[Parser] Total items collected: ${allItems.length}`)
 
+    // Track all unique bucket hashes to see what we're dealing with
+    const bucketHashCounts = new Map<number, number>()
+    for (const item of allItems) {
+      bucketHashCounts.set(item.bucketHash, (bucketHashCounts.get(item.bucketHash) || 0) + 1)
+    }
+    console.log(`[Parser] Unique bucket hashes found:`, Array.from(bucketHashCounts.entries()).slice(0, 20))
+
     let weaponBucketCount = 0
     let hasInstanceIdCount = 0
     let hasDefinitionCount = 0
@@ -51,18 +58,27 @@ export class WeaponParser {
     let actualWeaponCount = 0
 
     // Filter and parse weapons
+    const missedWeaponBuckets = new Set<number>()
+
     for (const item of allItems) {
       // Check if item is in a weapon bucket
       const isWeapon = Object.values(WEAPON_BUCKET_HASHES).includes(item.bucketHash)
 
-      if (!isWeapon || !item.itemInstanceId) {
+      if (!isWeapon) {
+        // Check if this might be a weapon we're missing
+        if (item.itemInstanceId) {
+          const def = manifestService.getInventoryItem(item.itemHash)
+          if (def?.itemType === ItemType.Weapon) {
+            missedWeaponBuckets.add(item.bucketHash)
+          }
+        }
         continue
       }
-      weaponBucketCount++
 
       if (!item.itemInstanceId) {
         continue
       }
+      weaponBucketCount++
       hasInstanceIdCount++
 
       // Get weapon definition to check if it's legendary
@@ -122,6 +138,10 @@ export class WeaponParser {
     console.log(`  - Is legendary/exotic: ${legendaryExoticCount}`)
     console.log(`  - Is actual weapon: ${actualWeaponCount}`)
     console.log(`  - Final weapons parsed: ${weapons.length}`)
+
+    if (missedWeaponBuckets.size > 0) {
+      console.warn(`[Parser] Found weapons in unexpected buckets:`, Array.from(missedWeaponBuckets))
+    }
 
     return weapons
   }
