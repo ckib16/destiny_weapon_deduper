@@ -31,6 +31,43 @@ export const useAuthStore = defineStore('auth', () => {
   // Actions
   function initializeFromStorage() {
     const storedTokens = localStorage.getItem('bungie_tokens')
+
+    // Check for mock mode
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+      console.log('Initializing mock auth session')
+      accessToken.value = 'mock-access-token'
+      expiresAt.value = Date.now() + 86400000 // 24 hours
+      membershipId.value = 'mock-membership-id'
+
+      user.value = {
+        membershipId: 'mock-membership-id',
+        uniqueName: 'MockUser#1234',
+        displayName: 'Mock User',
+        normalizedName: 'mock user', // Added required field
+        profilePicture: 0, // Changed from path string to number (index?) or path if type allowed, but interface says number
+        profileTheme: 0,
+        userTitle: 0,
+        successMessageFlags: 0,
+        isDeleted: false,
+        about: 'Mock user for local development',
+        firstAccess: '', // ISO date string if needed
+        lastUpdate: ''
+      }
+
+      selectedMembership.value = {
+        membershipType: 3, // Steam
+        membershipId: 'mock-membership-id',
+        displayName: 'Mock Guardian',
+        bungieGlobalDisplayName: 'MockUser',
+        bungieGlobalDisplayNameCode: 1234,
+        crossSaveOverride: 0,
+        applicableMembershipTypes: [3],
+        isPublic: true,
+        membershipState: 0
+      }
+      return
+    }
+
     if (!storedTokens) return
 
     try {
@@ -119,6 +156,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     // If not in storage or invalid, fetch from API
     if (accessToken.value) {
+      if (import.meta.env.VITE_USE_MOCK === 'true') return // Skip API fetch in mock mode
+
       console.log('[Auth] Fetching memberships from API...')
       try {
         const memberships = await inventoryAPI.getMemberships(accessToken.value)

@@ -1,5 +1,6 @@
 import { BUNGIE_API_BASE, DestinyComponentType } from '@/utils/constants'
 import type { BungieResponse } from './types'
+import mockInventory from './mock-inventory.json'
 
 /**
  * Profile response from Bungie API
@@ -151,6 +152,11 @@ export class InventoryAPI {
     membershipId: string,
     accessToken: string
   ): Promise<DestinyProfileResponse> {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+      console.log('Using mock inventory data')
+      return (mockInventory as any).Response as DestinyProfileResponse
+    }
+
     // Request specific components we need
     const components = [
       DestinyComponentType.Profiles,
