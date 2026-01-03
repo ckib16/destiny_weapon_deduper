@@ -76,7 +76,31 @@ function isMasterworkPlug(hash: number): boolean {
   const perkDef = manifestService.getInventoryItem(hash)
   const name = perkDef?.displayProperties?.name?.toLowerCase() || ''
   const typeName = perkDef?.itemTypeDisplayName?.toLowerCase() || ''
-  return name.startsWith('masterwork') || name.startsWith('masterworked') || typeName.includes('masterwork')
+  if (typeName.includes('masterwork')) return true
+
+  if (name.includes('masterwork')) {
+    if (name.startsWith('tier ')) return false
+    if (name.includes('random masterwork')) return false
+    if (name.includes('empty mod socket')) return false
+    return true
+  }
+
+  if (name.includes('masterworked')) return true
+
+  return false
+}
+
+function isMasterworkDisplayCandidate(hash: number): boolean {
+  const perkDef = manifestService.getInventoryItem(hash)
+  if (!perkDef) return false
+  const name = perkDef.displayProperties?.name?.toLowerCase() || ''
+
+  if (!name) return false
+  if (name.startsWith('tier ')) return false
+  if (name.includes('random masterwork')) return false
+  if (name.includes('empty mod socket')) return false
+
+  return true
 }
 
 function isTrackerColumn(
@@ -182,11 +206,10 @@ function getOwnedPlugHashes(
       for (const plugHash of plugOptions) {
         ownedPerks.add(plugHash)
       }
-    } else {
-      const socket = instance.sockets.sockets[socketIndex]
-      if (socket?.plugHash) {
-        ownedPerks.add(socket.plugHash)
-      }
+    }
+    const socket = instance.sockets.sockets[socketIndex]
+    if (socket?.plugHash) {
+      ownedPerks.add(socket.plugHash)
     }
   }
 
@@ -430,11 +453,17 @@ function buildPerkMatrix(
 
   const masterwork = masterworkCandidate
   if (masterwork) {
-    masterworkPerks.push(...buildOwnedPerksList(
-      masterwork.socketIndex,
-      instances,
-      isMasterworkPlug
-    ))
+    const socketTypeName = masterwork.socketTypeName.toLowerCase()
+    const filter = socketTypeName.includes('masterwork')
+      ? isMasterworkDisplayCandidate
+      : isMasterworkPlug
+    masterworkPerks.push(
+      ...buildOwnedPerksList(
+        masterwork.socketIndex,
+        instances,
+        filter
+      )
+    )
   }
 
   for (const { label, candidate } of orderedColumns) {
