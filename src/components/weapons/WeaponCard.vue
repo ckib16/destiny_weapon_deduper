@@ -38,6 +38,50 @@
       <WeaponMatrix :columns="weapon.perkMatrix" />
     </div>
 
+    <div class="mt-4 rounded-lg border border-gray-700 bg-gray-900/40 p-3">
+      <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-400">Notes</h4>
+      <div class="mt-2 space-y-2 text-sm">
+        <div>
+          <p class="text-xs text-gray-500">Intrinsic Trait</p>
+          <div v-if="weapon.intrinsicPerks.length" class="mt-1 flex flex-wrap gap-2">
+            <span
+              v-for="perk in weapon.intrinsicPerks"
+              :key="perk.hash"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+            >
+              <img
+                v-if="perk.icon"
+                :src="`https://www.bungie.net${perk.icon}`"
+                :alt="perk.name"
+                class="h-4 w-4 rounded"
+              />
+              <span>{{ perk.name }}</span>
+            </span>
+          </div>
+          <p v-else class="mt-1 text-xs text-gray-500">None detected</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500">Masterwork</p>
+          <div v-if="weapon.masterworkPerks.length" class="mt-1 flex flex-wrap gap-2">
+            <span
+              v-for="perk in weapon.masterworkPerks"
+              :key="perk.hash"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+            >
+              <img
+                v-if="perk.icon"
+                :src="`https://www.bungie.net${perk.icon}`"
+                :alt="perk.name"
+                class="h-4 w-4 rounded"
+              />
+              <span>{{ perk.name }}</span>
+            </span>
+          </div>
+          <p v-else class="mt-1 text-xs text-gray-500">None detected</p>
+        </div>
+      </div>
+    </div>
+
     <div class="mt-4">
       <InstanceList :instances="weapon.instances" />
     </div>

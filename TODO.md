@@ -19,3 +19,16 @@ Consider these stats
 - Copies
 - "completion bar" that tracks "desired perks" vs "owned perks" (will be 100% if have all desired perks)
 - would need concept of user-selected "desired perks" that live in state and don't go away; maybe even exported in some format for safety
+
+### Detailed / Punch-card UI view
+- [ ] Demote "intrinsic trait" column to a new "Additional Details" section
+  - Columns 1 - 5 are now
+    - Barrel (or synonyms)
+    - Magazine (or synonyms)
+    - Left Traits
+    - Right Traits
+    - Origin Traits
+- [ ] New "Additional Details" section with these 2 items:
+  - [ ] Add "Intrinsic Trait" (Example "High-Impact Frame")
+  - [ ] Add "Masterwork" (Example "Masterwork: Range")
+- [ ] When hover over any Trait that Bungie provides a description for, show pop up text description from Bungie (example: hovering over "Attrition Orbs" trait shows "Dealing sustained power creates an Orb of Power")

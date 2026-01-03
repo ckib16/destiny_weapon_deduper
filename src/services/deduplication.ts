@@ -24,7 +24,7 @@ interface SocketEntry {
   randomizedPlugSetHash?: number
 }
 
-type ColumnKind = 'intrinsic' | 'barrel' | 'magazine' | 'trait' | 'origin' | 'other'
+type ColumnKind = 'intrinsic' | 'barrel' | 'magazine' | 'trait' | 'origin' | 'masterwork' | 'other'
 
 const BARREL_TYPE_NAMES = new Set([
   'barrel',
@@ -106,6 +106,7 @@ function getColumnKind(
 
   if (perkTypes.some((name) => name.includes('intrinsic'))) return 'intrinsic'
   if (perkTypes.some((name) => name.includes('origin'))) return 'origin'
+  if (perkTypes.some((name) => name.includes('masterwork'))) return 'masterwork'
   if (perkTypes.some((name) => BARREL_TYPE_NAMES.has(name))) return 'barrel'
   if (perkTypes.some((name) => MAGAZINE_TYPE_NAMES.has(name))) return 'magazine'
   if (perkTypes.some((name) => name.includes('barrel'))) return 'barrel'
@@ -114,6 +115,7 @@ function getColumnKind(
 
   if (category.includes('intrinsic')) return 'intrinsic'
   if (typeName.includes('intrinsic')) return 'intrinsic'
+  if (typeName.includes('masterwork')) return 'masterwork'
   if (typeName.includes('barrel')) return 'barrel'
   if (typeName.includes('magazine')) return 'magazine'
   if (typeName.includes('origin')) return 'origin'
@@ -222,12 +224,12 @@ function buildPerkColumn(
 function buildPerkMatrix(
   weaponHash: number,
   instances: WeaponInstance[]
-): PerkColumn[] {
+): { matrix: PerkColumn[]; intrinsicPerks: Perk[]; masterworkPerks: Perk[] } {
   const weaponDef = manifestService.getInventoryItem(weaponHash)
   const socketData = weaponDef?.sockets
 
   if (!socketData?.socketEntries?.length || !socketData.socketCategories?.length) {
-    return []
+    return { matrix: [], intrinsicPerks: [], masterworkPerks: [] }
   }
 
   const socketEntries = socketData.socketEntries as SocketEntry[]
@@ -290,6 +292,7 @@ function buildPerkMatrix(
     magazine: [],
     trait: [],
     origin: [],
+    masterwork: [],
     other: []
   }
 
@@ -301,11 +304,6 @@ function buildPerkMatrix(
     label: string
     candidate: typeof columnCandidates[number]
   }> = []
-
-  const intrinsic = columnsByKind.intrinsic[0]
-  if (intrinsic) {
-    orderedColumns.push({ label: 'Intrinsic Traits', candidate: intrinsic })
-  }
 
   const barrel = columnsByKind.barrel[0]
   if (barrel) {
@@ -331,6 +329,36 @@ function buildPerkMatrix(
   }
 
   const perkColumns: PerkColumn[] = []
+  const intrinsicPerks: Perk[] = []
+  const masterworkPerks: Perk[] = []
+
+  const intrinsic = columnsByKind.intrinsic[0]
+  if (intrinsic) {
+    const column = buildPerkColumn(
+      intrinsic.socketEntry,
+      intrinsic.plugItemHashes,
+      intrinsic.socketIndex,
+      instances,
+      'Intrinsic Traits'
+    )
+    if (column) {
+      intrinsicPerks.push(...column.availablePerks)
+    }
+  }
+
+  const masterwork = columnsByKind.masterwork[0]
+  if (masterwork) {
+    const column = buildPerkColumn(
+      masterwork.socketEntry,
+      masterwork.plugItemHashes,
+      masterwork.socketIndex,
+      instances,
+      'Masterwork'
+    )
+    if (column) {
+      masterworkPerks.push(...column.availablePerks)
+    }
+  }
 
   for (const { label, candidate } of orderedColumns) {
     const column = buildPerkColumn(
@@ -357,7 +385,7 @@ function buildPerkMatrix(
     perkColumns.push(column)
   }
 
-  return perkColumns
+  return { matrix: perkColumns, intrinsicPerks, masterworkPerks }
 }
 
 function countOwnedPerks(columns: PerkColumn[]): number {
@@ -378,9 +406,9 @@ export function buildDedupedWeapon(
   weaponHash: number,
   instances: WeaponInstance[]
 ): DedupedWeapon {
-  const perkMatrix = buildPerkMatrix(weaponHash, instances)
-  const totalPerksOwned = countOwnedPerks(perkMatrix)
-  const totalPerksPossible = countPossiblePerks(perkMatrix)
+  const { matrix, intrinsicPerks, masterworkPerks } = buildPerkMatrix(weaponHash, instances)
+  const totalPerksOwned = countOwnedPerks(matrix)
+  const totalPerksPossible = countPossiblePerks(matrix)
   const completionPercentage = totalPerksPossible > 0
     ? Math.round((totalPerksOwned / totalPerksPossible) * 100)
     : 0
@@ -389,7 +417,9 @@ export function buildDedupedWeapon(
     weaponHash,
     weaponName: weaponParser.getWeaponName(weaponHash),
     weaponIcon: weaponParser.getWeaponIcon(weaponHash),
-    perkMatrix,
+    perkMatrix: matrix,
+    intrinsicPerks,
+    masterworkPerks,
     instances,
     totalPerksOwned,
     totalPerksPossible,

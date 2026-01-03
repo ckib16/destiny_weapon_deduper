@@ -8,6 +8,8 @@ export interface DedupedWeapon {
 
   // Merged perk data
   perkMatrix: PerkColumn[]
+  intrinsicPerks: Perk[]
+  masterworkPerks: Perk[]
 
   // Contributing instances
   instances: WeaponInstance[]
