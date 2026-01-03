@@ -1,21 +1,21 @@
 # D3 Deduper TODO
 
 ## UI Flow (Phase 4)
-- Show condensed weapon cards by default on "Your Weapons" page (image + Copies / Owned perks / Possible perks / Completion).
-- On weapon click, switch to a focused view that shows only the selected weapon’s punch-card matrix and hides all other weapons.
+- [x] Show condensed weapon cards by default on "Your Weapons" page (image + Copies / Owned perks / Possible perks / Completion).
+- [x] On weapon click, switch to a focused view that shows only the selected weapon’s punch-card matrix and hides all other weapons.
 
 ## Perk Matrix Columns
-- Fix column order to: Intrinsic Traits, Barrel, Magazine, Left Trait, Right Trait, Origin Trait.
-- Remove the Kill Tracker/Memento column from the punch-card display.
+- [x] Fix column order to: Intrinsic Traits, Barrel, Magazine, Left Trait, Right Trait, Origin Trait.
+- [x] Remove the Kill Tracker/Memento column from the punch-card display.
 
 ## Perk Deduping
-- Remove duplicate perks in columns 2–6 (treat enhanced perks as canonical and hide non-enhanced duplicates).
+- [x] Remove duplicate perks in columns 2–6 (treat enhanced perks as canonical and hide non-enhanced duplicates).
 
 ### Condensed view cards
 Consider these stats
-- Copies
-- "completion bar" that tracks "desired perks" vs "owned perks" (will be 100% if have all desired perks)
-- would need concept of user-selected "desired perks" that live in state and don't go away; maybe even exported in some format for safety
+- [ ] Copies
+- [ ] Completion bar that tracks "desired perks" vs "owned perks" (will be 100% if have all desired perks)
+- [ ] Would need concept of user-selected "desired perks" that live in state and don't go away; maybe even exported in some format for safety
 
 ### Detailed / Punch-card UI view
 - [x] Demote "intrinsic trait" column to a new "Additional Details" section
