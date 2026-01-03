@@ -28,10 +28,11 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import CoveragePrototype from '@/components/playground/CoveragePrototype.vue'
+import GodRollPrototype from '@/components/playground/GodRollPrototype.vue'
 
 const modes = [
   { id: 'coverage', label: 'Coverage Prototype', component: CoveragePrototype },
-  { id: 'godroll', label: 'God Roll (Coming Soon)', component: null }
+  { id: 'godroll', label: 'God Roll Builder', component: GodRollPrototype }
 ]
 
 const currentMode = ref('coverage')
