@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-lg border border-gray-700 bg-gray-800/60 p-3">
+  <div class="rounded-lg border border-gray-700 bg-gray-800/60 p-3 overflow-visible">
     <div class="flex items-center justify-between">
       <h4 class="text-xs font-semibold uppercase tracking-wide text-gray-300">
         {{ column.columnName || 'Perks' }}
