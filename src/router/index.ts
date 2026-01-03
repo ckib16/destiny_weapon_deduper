@@ -3,6 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 import HomeView from '@/views/HomeView.vue'
 import WeaponsView from '@/views/WeaponsView.vue'
 import CallbackView from '@/views/CallbackView.vue'
+import WeaponDetailView from '@/views/WeaponDetailView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -16,6 +17,12 @@ const router = createRouter({
       path: '/weapons',
       name: 'weapons',
       component: WeaponsView,
+      meta: { requiresAuth: true }
+    },
+    {
+      path: '/weapons/:weaponHash',
+      name: 'weapon-detail',
+      component: WeaponDetailView,
       meta: { requiresAuth: true }
     },
     {

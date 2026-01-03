@@ -16,9 +16,9 @@
       <span v-if="searchQuery">(filtered from {{ props.weapons.length }} total)</span>
     </div>
 
-    <!-- Weapon list -->
-    <div class="space-y-6">
-      <WeaponCard
+    <!-- Weapon grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <WeaponCompactCard
         v-for="weapon in filteredWeapons"
         :key="weapon.weaponHash"
         :weapon="weapon"
@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import type { DedupedWeapon } from '@/models/deduped-weapon'
-import WeaponCard from './WeaponCard.vue'
+import WeaponCompactCard from './WeaponCompactCard.vue'
 
 const props = defineProps<{
   weapons: DedupedWeapon[]
