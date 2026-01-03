@@ -4,6 +4,7 @@ export interface WeaponInstance {
   sockets: {
     sockets: SocketInstance[]
   }
+  socketPlugsByIndex?: Record<number, number[]>
 }
 
 export interface SocketInstance {

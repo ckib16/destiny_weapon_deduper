@@ -45,6 +45,12 @@ export interface DestinyProfileResponse {
     perks?: {
       data: Record<string, ItemPerks>
     }
+    plugStates?: {
+      data: Record<string, ItemPlugStates>
+    }
+    reusablePlugs?: {
+      data: Record<string, ItemReusablePlugs>
+    }
   }
 }
 
@@ -112,6 +118,22 @@ export interface ItemPerks {
   }>
 }
 
+export interface ItemPlugStates {
+  plugs: Array<{
+    plugItemHash: number
+    enabled: boolean
+    canInsert: boolean
+    enableFailIndexes?: number[]
+  }>
+}
+
+export interface ItemReusablePlugs {
+  plugs: Array<{
+    socketIndex: number
+    plugItemHash: number
+  }>
+}
+
 export class InventoryAPI {
   private readonly API_KEY: string
 
@@ -138,6 +160,8 @@ export class InventoryAPI {
       DestinyComponentType.ItemSockets,
       DestinyComponentType.ItemStats,
       DestinyComponentType.ItemPerks,
+      DestinyComponentType.ItemPlugStates,
+      DestinyComponentType.ItemReusablePlugs,
     ].join(',')
 
     const url = `${BUNGIE_API_BASE}/Destiny2/${membershipType}/Profile/${membershipId}/?components=${components}`

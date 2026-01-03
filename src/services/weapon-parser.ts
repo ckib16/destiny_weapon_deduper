@@ -110,6 +110,7 @@ export class WeaponParser {
 
       // Get socket data for this instance
       const socketData = profile.itemComponents?.sockets?.data?.[item.itemInstanceId]
+      const reusablePlugs = profile.itemComponents?.reusablePlugs?.data?.[item.itemInstanceId]
 
       if (!socketData || !socketData.sockets) {
         console.warn(`No socket data for weapon instance ${item.itemInstanceId}`)
@@ -117,6 +118,17 @@ export class WeaponParser {
       }
 
       // Create weapon instance
+      const socketPlugsByIndex: Record<number, number[]> = {}
+
+      if (reusablePlugs?.plugs) {
+        for (const plug of reusablePlugs.plugs) {
+          if (!socketPlugsByIndex[plug.socketIndex]) {
+            socketPlugsByIndex[plug.socketIndex] = []
+          }
+          socketPlugsByIndex[plug.socketIndex].push(plug.plugItemHash)
+        }
+      }
+
       const weaponInstance: WeaponInstance = {
         itemInstanceId: item.itemInstanceId,
         itemHash: item.itemHash,
@@ -125,7 +137,8 @@ export class WeaponParser {
             plugHash: socket.plugHash || 0,
             isEnabled: socket.isEnabled
           }))
-        }
+        },
+        socketPlugsByIndex: Object.keys(socketPlugsByIndex).length ? socketPlugsByIndex : undefined
       }
 
       weapons.push(weaponInstance)

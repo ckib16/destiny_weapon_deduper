@@ -72,6 +72,13 @@ function isEnhancedPerkName(name: string): boolean {
   return /^enhanced\s+/i.test(name)
 }
 
+function isMasterworkPlug(hash: number): boolean {
+  const perkDef = manifestService.getInventoryItem(hash)
+  const name = perkDef?.displayProperties?.name?.toLowerCase() || ''
+  const typeName = perkDef?.itemTypeDisplayName?.toLowerCase() || ''
+  return name.includes('masterwork') || typeName.includes('masterwork')
+}
+
 function isTrackerColumn(
   socketTypeName: string,
   categoryName: string | null,
@@ -175,9 +182,16 @@ function buildPerkColumn(
   const ownedPerks = new Set<number>()
 
   for (const instance of instances) {
-    const socket = instance.sockets.sockets[socketIndex]
-    if (socket?.plugHash) {
-      ownedPerks.add(socket.plugHash)
+    const plugOptions = instance.socketPlugsByIndex?.[socketIndex]
+    if (plugOptions && plugOptions.length > 0) {
+      for (const plugHash of plugOptions) {
+        ownedPerks.add(plugHash)
+      }
+    } else {
+      const socket = instance.sockets.sockets[socketIndex]
+      if (socket?.plugHash) {
+        ownedPerks.add(socket.plugHash)
+      }
     }
   }
 
@@ -332,6 +346,31 @@ function buildPerkMatrix(
   const intrinsicPerks: Perk[] = []
   const masterworkPerks: Perk[] = []
 
+  let masterworkCandidate = columnsByKind.masterwork[0]
+
+  if (!masterworkCandidate) {
+    for (let index = 0; index < socketEntries.length; index++) {
+      const socketEntry = socketEntries[index]
+      if (!socketEntry) continue
+      const plugItemHashes = getPlugItemHashes(socketEntry)
+      if (plugItemHashes.some((hash) => isMasterworkPlug(hash))) {
+        masterworkCandidate = {
+          socketIndex: index,
+          socketEntry,
+          socketTypeName: getSocketTypeName(
+            socketEntry.socketTypeHash,
+            `Perk Column ${index + 1}`
+          ),
+          categoryName: null,
+          kind: 'masterwork',
+          plugItemHashes,
+          perkTypeNames: getPlugItemTypeNames(plugItemHashes)
+        }
+        break
+      }
+    }
+  }
+
   const intrinsic = columnsByKind.intrinsic[0]
   if (intrinsic) {
     const column = buildPerkColumn(
@@ -346,7 +385,7 @@ function buildPerkMatrix(
     }
   }
 
-  const masterwork = columnsByKind.masterwork[0]
+  const masterwork = masterworkCandidate
   if (masterwork) {
     const column = buildPerkColumn(
       masterwork.socketEntry,
