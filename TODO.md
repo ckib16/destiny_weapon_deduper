@@ -11,9 +11,6 @@
 ## Perk Deduping
 - Remove duplicate perks in columns 2–6 (treat enhanced perks as canonical and hide non-enhanced duplicates).
 
-## Later
-- Add masterwork column support.
-
 ### Condensed view cards
 Consider these stats
 - Copies
@@ -30,7 +27,18 @@ Consider these stats
     - Origin Traits
 - [x] New "Additional Details" section with these 2 items:
   - [x] Add "Intrinsic Trait" (Example "High-Impact Frame")
-  - [ ] Add "Masterwork" (Example "Masterwork: Range")
+  - [x] Add "Masterwork" (Example "Masterwork: Range")
 - [x] When hover over any Trait that Bungie provides a description for, show pop up text description from Bungie (example: hovering over "Attrition Orbs" trait shows "Dealing sustained power creates an Orb of Power")
 - [x] Fix designation of which perks are owned
   - Currently: app shows which the aggregation of perks **currently selected** right now on weapon, not an aggregation of **all perks that exist on a weapon**
+
+## Backlog
+- [ ] Fix Masterwork section of "Notes" (shows "None detected")
+- [ ] Origin Traits > Aisha's Care > 3 origini traits onwed, only "Alacrity" is highlishted
+
+## Future versions
+- [ ] Idea of "Farming mode" and "Dedupe to God Roll mode"
+  - Farming mode: current mode, shows composite of all earned traits as you farm
+  - Dedupe mode: pick your god roll options, app compares your god roll options to inventory, highlights weapon instances that haave your god roll, allows you to lock/unlock instances of weapon (lock god roll, unlock all other rolls)
+- Streamer Picks ("Give me my opinion" mode)
+  - curated list of god rolls from Streamers, Light.gg, Blueberry.gg, other soruces
