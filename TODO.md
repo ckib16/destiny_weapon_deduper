@@ -33,12 +33,18 @@ Consider these stats
   - Currently: app shows which the aggregation of perks **currently selected** right now on weapon, not an aggregation of **all perks that exist on a weapon**
 
 ## Backlog
-- [ ] Fix Masterwork section of "Notes" (shows "None detected")
-- [ ] Origin Traits > Aisha's Care > 3 origini traits onwed, only "Alacrity" is highlishted
+- [x] Fix Masterwork section of "Notes" (shows "None detected")
+- [x] Origin Traits > Aisha's Care > 3 origin traits owned, only "Alacrity" is highlighted
 
 ## Future versions
 - [ ] Idea of "Farming mode" and "Dedupe to God Roll mode"
   - Farming mode: current mode, shows composite of all earned traits as you farm
   - Dedupe mode: pick your god roll options, app compares your god roll options to inventory, highlights weapon instances that haave your god roll, allows you to lock/unlock instances of weapon (lock god roll, unlock all other rolls)
+    - God Roll features:
+      - User can pick desired perks for each column with "and/or" logic
+        - Constraints for max amount of and/or options per column should default to Tier 5 limits (2 options for 1st 2 columns, 3 options for left and right trait columns, origin trait options depend on the exact weapon)
+      - Show percentage chance of getting each god roll given your requirements and tier level you expect to drop at (example: Tier 5 as default)
+        - Example: "you selected 2 perks for column 1, 2 perks for column 2, 2 perks for column 3, 2 perks for column 4, 2 perks for column 5, 2 perks for origin traits. Given that you expect to drop at Tier 5, you have a 10% chance of getting this god roll."
+        - Need vocabulary to differentiate between "and" and "or" logic. Goal is to show that you have better odds if you are less choosy with 2 perks using "or" logic rather than **requiring** 2 perks with "and" logic.
 - Streamer Picks ("Give me my opinion" mode)
   - curated list of god rolls from Streamers, Light.gg, Blueberry.gg, other soruces
