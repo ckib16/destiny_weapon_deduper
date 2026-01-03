@@ -17,7 +17,7 @@
       <span class="truncate">{{ perk.name || 'Unknown Perk' }}</span>
     </div>
     <div
-      class="pointer-events-none absolute left-0 top-full z-10 mt-2 w-56 rounded border border-gray-700 bg-gray-900 p-2 text-xs text-gray-200 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100"
+      class="pointer-events-none absolute left-0 bottom-full z-50 mb-2 w-56 rounded border border-gray-700 bg-gray-900 p-2 text-xs text-gray-200 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100"
     >
       <p class="font-semibold text-gray-100">{{ perk.name || 'Unknown Perk' }}</p>
       <p class="mt-1 text-gray-400">{{ perk.description || 'No description available.' }}</p>
