@@ -175,7 +175,7 @@ function buildPerkColumn(
 
   const availablePerks: Perk[] = []
 
-  for (const [normalizedName, variants] of perkGroups.entries()) {
+  for (const variants of perkGroups.values()) {
     const enhancedVariant = variants.find((variant) => isEnhancedPerkName(variant.name))
     const chosen = enhancedVariant || variants[0]
     const perkDef = manifestService.getInventoryItem(chosen.hash)

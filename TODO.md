@@ -14,7 +14,7 @@
 ## Later
 - Add masterwork column support.
 
-## Condensed view cards
+### Condensed view cards
 Consider these stats
 - Copies
 - "completion bar" that tracks "desired perks" vs "owned perks" (will be 100% if have all desired perks)
