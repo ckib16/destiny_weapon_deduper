@@ -7,34 +7,81 @@
         <p class="text-sm text-gray-400">Define your target, see what matches.</p>
       </div>
       
+      <!-- Save Logic UI -->
       <div class="flex items-center gap-4">
-        <div class="text-xs text-gray-500 bg-gray-900 px-3 py-1.5 rounded border border-gray-700">
+        <!-- Legend -->
+         <div class="hidden xl:block text-xs text-gray-500 bg-gray-900 px-3 py-1.5 rounded border border-gray-700">
           <span class="text-blue-400 font-bold">Click</span> = Acceptable (OR) <span class="mx-2">|</span> 
           <span class="text-orange-400 font-bold">Shift+Click</span> = Required (AND)
         </div>
-        
-        <div class="flex gap-2">
+
+        <!-- inline Save Form -->
+        <div v-if="isSaving" class="flex items-center gap-2 bg-gray-900 p-1 rounded border border-blue-500/50 animate-in fade-in slide-in-from-right-4 duration-200">
+          <input 
+            v-model="newProfileName"
+            type="text" 
+            placeholder="Name your roll..."
+            class="bg-transparent text-sm px-2 py-1 text-white focus:outline-none w-32 md:w-48 placeholder-gray-600"
+            @keyup.enter="confirmSave(false)"
+            @keyup.esc="cancelSave"
+            ref="nameInput"
+          />
+          <div class="flex gap-1" v-if="currentProfileId">
+             <button 
+              @click="confirmSave(false)"
+              class="bg-blue-600 hover:bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold"
+              title="Update existing profile"
+            >
+              Update
+            </button>
+             <button 
+              @click="confirmSave(true)"
+              class="bg-green-600 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold"
+              title="Save as new profile"
+            >
+              Save Copy
+            </button>
+          </div>
+          <button 
+            v-else
+            @click="confirmSave(false)"
+            class="bg-green-600 hover:bg-green-500 text-white px-2 py-1 rounded text-xs font-bold"
+          >
+            Save
+          </button>
+           <button 
+            @click="cancelSave"
+            class="bg-gray-700 hover:bg-gray-600 text-gray-300 px-2 py-1 rounded text-xs"
+          >
+            ✕
+          </button>
+        </div>
+
+        <!-- Default Buttons -->
+        <div v-else class="flex gap-2">
            <button 
             @click="clearSelection"
-            class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded text-sm font-semibold transition-colors"
+            class="bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-2 rounded text-sm font-semibold transition-colors border border-gray-600"
           >
-            Clear
+            + New Profile
           </button>
           <button 
-            @click="saveProfile"
+            @click="startSave"
             class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded text-sm font-semibold transition-colors flex items-center gap-2"
           >
             <span v-if="hasUnsavedChanges">*</span>
-            Save Profile
+            {{ currentProfileId ? 'Save Changes' : 'Save God Roll' }}
           </button>
         </div>
       </div>
     </div>
 
+    <!-- ... (Matrix Grid remains unchanged) ... -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       
       <!-- Left: Builder Matrix -->
       <div class="lg:col-span-2 space-y-4">
+        <!-- ... (Header and Legend) ... -->
         <div class="flex items-center justify-between">
           <h4 class="font-bold text-lg">God Roll Selector</h4>
           <span class="text-xs uppercase tracking-wider text-gray-500">Anonymous Autumn</span>
@@ -113,8 +160,8 @@
               </span>
             </div>
             
-             <!-- Full Perk Matrix Tags for Instance -->
-             <div class="grid grid-cols-6 gap-1 min-w-0 opacity-80">
+             <!-- Full Perk Matrix Tags for Instance (Updated to Flex) -->
+             <div class="flex flex-wrap gap-1 min-w-0 opacity-80">
                <span 
                 v-for="(perkId, idx) in instance.perks" 
                 :key="idx"
@@ -135,18 +182,23 @@
       <h4 class="font-bold text-lg mb-4">Saved God Rolls</h4>
       
       <div v-if="savedProfiles.length === 0" class="text-center text-gray-500 py-8 bg-gray-900/30 rounded border border-dashed border-gray-700">
-        No saved profiles yet. Click "Save Profile" to create one.
+        No saved profiles yet. Click "Save God Roll" to create one.
       </div>
 
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div 
           v-for="profile in savedProfiles" 
           :key="profile.id"
-          class="bg-gray-800 border border-gray-700 rounded-lg p-4 flex flex-col gap-3"
+          class="bg-gray-800 border border-gray-700 rounded-lg p-4 flex flex-col gap-3 transition-colors"
+          :class="{ 'ring-2 ring-blue-500 bg-gray-800': currentProfileId === profile.id }"
         >
+          <!-- Header -->
           <div class="flex justify-between items-start">
             <div>
-              <h5 class="font-bold text-white">{{ profile.name }}</h5>
+              <h5 class="font-bold text-white relative">
+                 {{ profile.name }}
+                 <span v-if="currentProfileId === profile.id" class="absolute -left-6 top-1 w-2 h-2 rounded-full bg-blue-500"></span>
+              </h5>
               <p class="text-xs text-gray-400 font-mono">{{ new Date(profile.updatedAt).toLocaleDateString() }}</p>
             </div>
             <span class="bg-gray-900 text-gray-300 text-xs px-2 py-1 rounded">
@@ -154,19 +206,40 @@
             </span>
           </div>
 
+          <!-- Actions -->
           <div class="mt-auto flex gap-2">
-            <button 
-              @click="loadProfile(profile)"
-              class="flex-1 bg-blue-900/50 hover:bg-blue-900 text-blue-200 text-xs py-2 rounded transition-colors border border-blue-900"
-            >
-              Load / Edit
-            </button>
-            <button 
-              @click="deleteProfile(profile.id)"
-              class="px-3 bg-red-900/30 hover:bg-red-900/50 text-red-300 text-xs py-2 rounded transition-colors border border-red-900/50"
-            >
-              Delete
-            </button>
+            <!-- Normal State: Load / Delete -->
+            <template v-if="profileIdPendingDelete !== profile.id">
+              <button 
+                @click="loadProfile(profile)"
+                class="flex-1 bg-blue-900/30 hover:bg-blue-900/50 text-blue-200 text-xs py-2 rounded transition-colors border border-blue-900/50"
+              >
+                {{ currentProfileId === profile.id ? 'Active' : 'Load' }}
+              </button>
+              <button 
+                @click="profileIdPendingDelete = profile.id"
+                class="px-3 bg-red-900/10 hover:bg-red-900/30 text-red-400 text-xs py-2 rounded transition-colors border border-red-900/20"
+              >
+                Delete
+              </button>
+            </template>
+            
+            <!-- Delete Confirm State -->
+            <template v-else>
+               <span class="text-xs text-red-400 font-bold self-center mr-auto pl-1">Sure?</span>
+               <button 
+                @click="deleteProfile(profile.id)"
+                class="px-3 bg-red-600 hover:bg-red-500 text-white text-xs py-2 rounded transition-colors font-bold"
+              >
+                Yes
+              </button>
+              <button 
+                @click="profileIdPendingDelete = null"
+                class="px-2 bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs py-2 rounded transition-colors"
+              >
+                Cancel
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -176,8 +249,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { ALL_PERKS, MOCK_INSTANCES, COLUMN_HEADERS, type MockPerk } from './mock-data'
+import { ref, computed, onMounted, nextTick } from 'vue'
+import { ALL_PERKS, MOCK_INSTANCES, COLUMN_HEADERS, type MockPerk, type MockInstance } from './mock-data'
 
 // --- Types ---
 type SelectionType = 'OR' | 'AND' | null
@@ -194,10 +267,17 @@ const selection = ref<Record<string, SelectionType>>({})
 const savedProfiles = ref<SavedProfile[]>([])
 const currentProfileId = ref<string | null>(null)
 
+// UI State for Actions
+const isSaving = ref(false)
+const newProfileName = ref('')
+const nameInput = ref<HTMLInputElement | null>(null)
+const profileIdPendingDelete = ref<string | null>(null) // Tracks which card is showing "Are you sure?"
+
 const instances = MOCK_INSTANCES
 const allPerksMap = new Map<string, MockPerk>()
 ALL_PERKS.forEach(p => allPerksMap.set(p.id, p))
 
+// Matrix logic (6 cols)
 const matrixColumns = Array.from({ length: 6 }, (_, i) => ({
   perks: ALL_PERKS.filter(p => p.colIndex === i)
 }))
@@ -220,42 +300,67 @@ const saveStorage = () => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(savedProfiles.value))
 }
 
-const saveProfile = () => {
-  const perkCount = Object.keys(selection.value).length
+const startSave = () => {
+   const perkCount = Object.keys(selection.value).length
   if (perkCount === 0) {
     alert("Please select at least one perk before saving.")
     return
   }
-
-  // Simple prompt for now
-  const name = prompt("Enter a name for this God Roll:", currentProfileId.value ? savedProfiles.value.find(p => p.id === currentProfileId.value)?.name : "My God Roll")
-  if (!name) return
-
-  const profile: SavedProfile = {
-    id: currentProfileId.value || crypto.randomUUID(),
-    name,
-    updatedAt: Date.now(),
-    selection: { ...selection.value } // Deep copy
+  
+  // Pre-fill name based on current state
+  if (currentProfileId.value) {
+    const existing = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    if (existing) newProfileName.value = existing.name
+  } else {
+    // Determine a smart default name?
+    newProfileName.value = ""
   }
 
-  const existingIdx = savedProfiles.value.findIndex(p => p.id === profile.id)
-  if (existingIdx >= 0) {
-    savedProfiles.value[existingIdx] = profile
-  } else {
+  isSaving.value = true
+  // Focus input next tick
+  nextTick(() => {
+    nameInput.value?.focus()
+  })
+}
+
+const cancelSave = () => {
+  isSaving.value = false
+}
+
+const confirmSave = (saveAsCopy: boolean) => {
+  if (!newProfileName.value.trim()) return
+
+  const isNew = !currentProfileId.value || saveAsCopy
+  
+  const profile: SavedProfile = {
+    id: isNew ? crypto.randomUUID() : currentProfileId.value!,
+    name: newProfileName.value.trim(),
+    updatedAt: Date.now(),
+    selection: { ...selection.value }
+  }
+
+  if (isNew) {
     savedProfiles.value.push(profile)
+     // If saving as copy, do we switch to it? Yes usually.
+    currentProfileId.value = profile.id
+  } else {
+    // Update existing
+    const idx = savedProfiles.value.findIndex(p => p.id === profile.id)
+    if (idx !== -1) savedProfiles.value[idx] = profile
   }
 
   saveStorage()
-  currentProfileId.value = profile.id
+  isSaving.value = false
 }
 
 const deleteProfile = (id: string) => {
-  if (!confirm("Are you sure you want to delete this profile?")) return
   savedProfiles.value = savedProfiles.value.filter(p => p.id !== id)
   saveStorage()
+  profileIdPendingDelete.value = null
+  
   if (currentProfileId.value === id) {
     currentProfileId.value = null
-    selection.value = {}
+    // selection.value = {} // Optional: Clear selection when active profile is deleted? Or keep it as "unsaved"? Let's keep it.
   }
 }
 
@@ -280,6 +385,7 @@ const hasUnsavedChanges = computed(() => {
 onMounted(() => {
   loadStorage()
 })
+
 
 // --- Interaction Logic ---
 

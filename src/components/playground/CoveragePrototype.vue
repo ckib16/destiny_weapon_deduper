@@ -111,7 +111,7 @@
             </div>
             
             <!-- Full Perk Matrix Tags for Instance -->
-            <div class="grid grid-cols-6 gap-1 min-w-0">
+            <div class="flex flex-wrap gap-1 min-w-0">
                <span 
                 v-for="(perkId, idx) in instance.perks" 
                 :key="idx"

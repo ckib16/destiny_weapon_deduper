@@ -37,6 +37,7 @@ Consider these stats
 - [x] Origin Traits > Aisha's Care > 3 origin traits owned, only "Alacrity" is highlighted
 
 ## 2026-01-03
+1400L
 - [x] Playground changes
   - Coverage view
     - Perk Matrix section
@@ -59,5 +60,25 @@ Consider these stats
       - [x] On the right of each saved profile, add an "Edit" and "Delete" button
       - [x] When the user clicks "Edit", switch to the God Roll view and load the selected profile
       - [x] When the user clicks "Delete", remove the selected profile from storage
-      
-## Backlog
+
+1440L
+- [x] Overall
+  - [x] Anonymous Autumn (Sidearm) perk matrix is not accurate - see JSON file at https://data.destinysets.com/i/InventoryItem:1051949956?lang=en
+  - [x] Not sure if innacurate perk matrix is due to just being a quick mockup or if it's a bug
+- [x] Coverage view
+  - [x] Instance section
+    - [x] Each instance should show the full "perk matrix" of that instance (show all 6 columns and however many rows needed); but keep the font size small so it doesn't take up too much space just like you have it now
+- [x] God Roll view
+  - [x] Save Profile button doesn't work: I can see a browser confirmation window pop-up for a split second but then it disappears
+  - [x] Rename button to "Save God Roll"
+
+1502L
+- [x] I want to clarify there will be 3 views in the Detail View
+  - [x] Overview View - the default view now in the main app showing simple highlighted perk matrix if any instances owned contain any perks
+  - [x] Coverage View - as described in Playground
+  - [x] God Roll View - as described in Playground
+  - [x] So I want a total of 3 views in the Detail View, with the ability to switch between them
+- [x] God Roll View
+  - [x] Delete button doesn't work - shows quick popup then pop-up disappears
+  - [x] Saving a new God Roll rofile overwrites the existing profile; it doesn't add a second or third profile etc.
+
