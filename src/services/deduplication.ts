@@ -76,7 +76,7 @@ function isMasterworkPlug(hash: number): boolean {
   const perkDef = manifestService.getInventoryItem(hash)
   const name = perkDef?.displayProperties?.name?.toLowerCase() || ''
   const typeName = perkDef?.itemTypeDisplayName?.toLowerCase() || ''
-  return name.includes('masterwork') || typeName.includes('masterwork')
+  return name.startsWith('masterwork') || name.startsWith('masterworked') || typeName.includes('masterwork')
 }
 
 function isTrackerColumn(
@@ -170,15 +170,10 @@ function getPlugItemHashes(socketEntry: SocketEntry): number[] {
   return Array.from(hashes)
 }
 
-function buildPerkColumn(
-  socketEntry: SocketEntry,
-  plugItemHashes: number[],
-  socketIndex: number,
+function getOwnedPlugHashes(
   instances: WeaponInstance[],
-  fallbackName: string
-): PerkColumn | null {
-  if (plugItemHashes.length === 0) return null
-
+  socketIndex: number
+): Set<number> {
   const ownedPerks = new Set<number>()
 
   for (const instance of instances) {
@@ -195,9 +190,28 @@ function buildPerkColumn(
     }
   }
 
+  return ownedPerks
+}
+
+function buildPerkColumn(
+  socketEntry: SocketEntry,
+  plugItemHashes: number[],
+  socketIndex: number,
+  instances: WeaponInstance[],
+  fallbackName: string
+): PerkColumn | null {
+  if (plugItemHashes.length === 0) return null
+
+  const ownedPerks = getOwnedPlugHashes(instances, socketIndex)
+  const allPlugHashes = new Set<number>(plugItemHashes)
+
+  for (const ownedHash of ownedPerks) {
+    allPlugHashes.add(ownedHash)
+  }
+
   const perkGroups = new Map<string, { hash: number; name: string }[]>()
 
-  for (const hash of plugItemHashes) {
+  for (const hash of allPlugHashes) {
     const perkDef = manifestService.getInventoryItem(hash)
     const perkName = perkDef?.displayProperties?.name || `Unknown Perk (${hash})`
     const normalized = normalizePerkName(perkName)
@@ -233,6 +247,31 @@ function buildPerkColumn(
     availablePerks,
     ownedPerks
   }
+}
+
+function buildOwnedPerksList(
+  socketIndex: number,
+  instances: WeaponInstance[],
+  filter?: (hash: number) => boolean
+): Perk[] {
+  const ownedHashes = getOwnedPlugHashes(instances, socketIndex)
+  const ownedPerks: Perk[] = []
+
+  for (const hash of ownedHashes) {
+    if (filter && !filter(hash)) continue
+    const perkDef = manifestService.getInventoryItem(hash)
+    if (!perkDef) continue
+    ownedPerks.push({
+      hash,
+      name: perkDef.displayProperties?.name || `Unknown Perk (${hash})`,
+      description: perkDef.displayProperties?.description || '',
+      icon: perkDef.displayProperties?.icon || '',
+      isOwned: true
+    })
+  }
+
+  ownedPerks.sort((a, b) => a.name.localeCompare(b.name))
+  return ownedPerks
 }
 
 function buildPerkMatrix(
@@ -353,14 +392,18 @@ function buildPerkMatrix(
       const socketEntry = socketEntries[index]
       if (!socketEntry) continue
       const plugItemHashes = getPlugItemHashes(socketEntry)
-      if (plugItemHashes.some((hash) => isMasterworkPlug(hash))) {
+      const socketTypeName = getSocketTypeName(
+        socketEntry.socketTypeHash,
+        `Perk Column ${index + 1}`
+      )
+      if (
+        socketTypeName.toLowerCase().includes('masterwork') ||
+        plugItemHashes.some((hash) => isMasterworkPlug(hash))
+      ) {
         masterworkCandidate = {
           socketIndex: index,
           socketEntry,
-          socketTypeName: getSocketTypeName(
-            socketEntry.socketTypeHash,
-            `Perk Column ${index + 1}`
-          ),
+          socketTypeName,
           categoryName: null,
           kind: 'masterwork',
           plugItemHashes,
@@ -387,16 +430,11 @@ function buildPerkMatrix(
 
   const masterwork = masterworkCandidate
   if (masterwork) {
-    const column = buildPerkColumn(
-      masterwork.socketEntry,
-      masterwork.plugItemHashes,
+    masterworkPerks.push(...buildOwnedPerksList(
       masterwork.socketIndex,
       instances,
-      'Masterwork'
-    )
-    if (column) {
-      masterworkPerks.push(...column.availablePerks)
-    }
+      isMasterworkPlug
+    ))
   }
 
   for (const { label, candidate } of orderedColumns) {
