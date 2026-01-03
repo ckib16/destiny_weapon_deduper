@@ -131,7 +131,9 @@ export interface ItemReusablePlugs {
   plugs: Array<{
     socketIndex: number
     plugItemHash: number
-  }>
+  }> | Record<string, Array<{
+    plugItemHash: number
+  }>>
 }
 
 export class InventoryAPI {

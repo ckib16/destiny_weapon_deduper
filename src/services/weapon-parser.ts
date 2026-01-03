@@ -121,11 +121,29 @@ export class WeaponParser {
       const socketPlugsByIndex: Record<number, number[]> = {}
 
       if (reusablePlugs?.plugs) {
-        for (const plug of reusablePlugs.plugs) {
-          if (!socketPlugsByIndex[plug.socketIndex]) {
-            socketPlugsByIndex[plug.socketIndex] = []
+        const { plugs } = reusablePlugs
+
+        if (Array.isArray(plugs)) {
+          for (const plug of plugs) {
+            if (!socketPlugsByIndex[plug.socketIndex]) {
+              socketPlugsByIndex[plug.socketIndex] = []
+            }
+            socketPlugsByIndex[plug.socketIndex].push(plug.plugItemHash)
           }
-          socketPlugsByIndex[plug.socketIndex].push(plug.plugItemHash)
+        } else {
+          for (const [socketIndexKey, socketPlugs] of Object.entries(plugs)) {
+            if (!Array.isArray(socketPlugs)) continue
+            const socketIndex = Number(socketIndexKey)
+            if (!Number.isFinite(socketIndex)) continue
+            if (!socketPlugsByIndex[socketIndex]) {
+              socketPlugsByIndex[socketIndex] = []
+            }
+            for (const plug of socketPlugs) {
+              if (plug?.plugItemHash) {
+                socketPlugsByIndex[socketIndex].push(plug.plugItemHash)
+              }
+            }
+          }
         }
       }
 
