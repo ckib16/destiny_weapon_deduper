@@ -32,7 +32,32 @@ Consider these stats
 - [x] Fix designation of which perks are owned
   - Currently: app shows which the aggregation of perks **currently selected** right now on weapon, not an aggregation of **all perks that exist on a weapon**
 
-## Backlog
+## 2026-01-02
 - [x] Fix Masterwork section of "Notes" (shows "None detected")
 - [x] Origin Traits > Aisha's Care > 3 origin traits owned, only "Alacrity" is highlighted
 
+## 2026-01-03
+- [x] Playground changes
+  - Coverage view
+    - Perk Matrix section
+      - [x] Missing "Origin Traits" column
+      - [x] Missing "Masterwork" column or selection
+      - [x] Only showing a small subset of all perks; the idea of this section is show ALL available perks for a weapon just like the Punchcard view; then when the user clicks on a particular perk in the perk matrix section, the individual instances that contain that perk should be highlighted in the Instances section on the right (you have this interaction correct already with "Simple Highlight" and "Segmented Bars" visualization modes)
+    - Instance section
+      - [x] Remove the descriptors in parentheses (PVP, PVE, etc.) for each instance
+      - [x] Use "Roll 1" and "Roll 2" instead of "A" and "B" (numbers instead of letters)
+      - [x] For each instance, show the full "perk matrix" of that instance (show all 6 columns and however many rows needed); but keep the font size small so it doesn't take up too much space just like you have it now
+  - God Roll view
+    - [x] Change "Target Definition" section name to "God Roll Selector"
+    - [x] Same as Coverage view, only showing a small subset of all perks; the idea of this section is show ALL available perks for a weapon just like the Punchcard view
+    - [x] Change "Matches" section name to "Your Owned Rolls"
+      - [x] Remove the descriptors in parentheses (PVP, PVE, etc.) for each instance
+      - [x] Use "Roll 1" and "Roll 2" instead of "A" and "B" (numbers instead of letters)
+      - [x] For each instance, show the full "perk matrix" of that instance (show all 6 columns and however many rows needed); but keep the font size small so it doesn't take up too much space just like you have it now
+    - [x] "Save Profile" button doesn't work
+    - [x] Need a "Saved God Rolls" section that shows all saved profiles below the current sections / bottom of the page
+      - [x] On the right of each saved profile, add an "Edit" and "Delete" button
+      - [x] When the user clicks "Edit", switch to the God Roll view and load the selected profile
+      - [x] When the user clicks "Delete", remove the selected profile from storage
+      
+## Backlog
