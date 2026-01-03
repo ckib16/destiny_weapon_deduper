@@ -76,6 +76,11 @@ function isMasterworkPlug(hash: number): boolean {
   const perkDef = manifestService.getInventoryItem(hash)
   const name = perkDef?.displayProperties?.name?.toLowerCase() || ''
   const typeName = perkDef?.itemTypeDisplayName?.toLowerCase() || ''
+
+  // Check plug category identifier for reliable detection
+  const plugCategory = perkDef?.plug?.plugCategoryIdentifier?.toLowerCase() || ''
+  if (plugCategory.includes('masterworks.stat')) return true
+
   if (typeName.includes('masterwork')) return true
 
   if (name.includes('masterwork')) {
@@ -96,6 +101,11 @@ function isMasterworkDisplayCandidate(hash: number): boolean {
   const name = perkDef.displayProperties?.name?.toLowerCase() || ''
 
   if (!name) return false
+
+  // Check plug category identifier
+  const plugCategory = perkDef?.plug?.plugCategoryIdentifier?.toLowerCase() || ''
+  if (plugCategory.includes('masterworks.stat')) return true
+
   if (name.startsWith('tier ')) return false
   if (name.includes('random masterwork')) return false
   if (name.includes('empty mod socket')) return false
@@ -196,15 +206,18 @@ function getPlugItemHashes(socketEntry: SocketEntry): number[] {
 
 function getOwnedPlugHashes(
   instances: WeaponInstance[],
-  socketIndex: number
+  socketIndex: number,
+  ignoreReusable: boolean = false
 ): Set<number> {
   const ownedPerks = new Set<number>()
 
   for (const instance of instances) {
-    const plugOptions = instance.socketPlugsByIndex?.[socketIndex]
-    if (plugOptions && plugOptions.length > 0) {
-      for (const plugHash of plugOptions) {
-        ownedPerks.add(plugHash)
+    if (!ignoreReusable) {
+      const plugOptions = instance.socketPlugsByIndex?.[socketIndex]
+      if (plugOptions && plugOptions.length > 0) {
+        for (const plugHash of plugOptions) {
+          ownedPerks.add(plugHash)
+        }
       }
     }
     const socket = instance.sockets.sockets[socketIndex]
@@ -251,7 +264,19 @@ function buildPerkColumn(
     const enhancedVariant = variants.find((variant) => isEnhancedPerkName(variant.name))
     const chosen = enhancedVariant || variants[0]
     const perkDef = manifestService.getInventoryItem(chosen.hash)
-    const isOwned = variants.some((variant) => ownedPerks.has(variant.hash))
+
+    let isOwned = variants.some((variant) => ownedPerks.has(variant.hash))
+
+    // Fix for Origin Traits that use a fixed reusablePlugSet (like Aisha's Care)
+    // If the socket has a reusablePlugSet (fixed options) and is NOT randomized, 
+    // we assume all options in that set are available/owned.
+    if (!isOwned && fallbackName === 'Origin Trait') {
+      const hasFixedPlugs = !!socketEntry.reusablePlugSetHash
+      const hasRandomPlugs = !!socketEntry.randomizedPlugSetHash
+      if (hasFixedPlugs && !hasRandomPlugs) {
+        isOwned = true
+      }
+    }
 
     availablePerks.push({
       hash: chosen.hash,
@@ -275,9 +300,10 @@ function buildPerkColumn(
 function buildOwnedPerksList(
   socketIndex: number,
   instances: WeaponInstance[],
-  filter?: (hash: number) => boolean
+  filter?: (hash: number) => boolean,
+  ignoreReusable: boolean = false
 ): Perk[] {
-  const ownedHashes = getOwnedPlugHashes(instances, socketIndex)
+  const ownedHashes = getOwnedPlugHashes(instances, socketIndex, ignoreReusable)
   const ownedPerks: Perk[] = []
 
   for (const hash of ownedHashes) {
@@ -461,7 +487,8 @@ function buildPerkMatrix(
       ...buildOwnedPerksList(
         masterwork.socketIndex,
         instances,
-        filter
+        filter,
+        true
       )
     )
   }
