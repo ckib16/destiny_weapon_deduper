@@ -26,6 +26,23 @@ interface SocketEntry {
 
 type ColumnKind = 'intrinsic' | 'barrel' | 'magazine' | 'trait' | 'origin' | 'other'
 
+const BARREL_TYPE_NAMES = new Set([
+  'barrel',
+  'rail',
+  'scope',
+  'sight',
+  'bowstring'
+])
+
+const MAGAZINE_TYPE_NAMES = new Set([
+  'magazine',
+  'battery',
+  'bolt',
+  'bolts',
+  'arrow',
+  'ammunition'
+])
+
 const PERK_CATEGORY_HASHES = new Set<number>([
   SOCKET_CATEGORY_WEAPON_PERKS,
   SOCKET_CATEGORY_INTRINSIC_TRAITS
@@ -89,6 +106,8 @@ function getColumnKind(
 
   if (perkTypes.some((name) => name.includes('intrinsic'))) return 'intrinsic'
   if (perkTypes.some((name) => name.includes('origin'))) return 'origin'
+  if (perkTypes.some((name) => BARREL_TYPE_NAMES.has(name))) return 'barrel'
+  if (perkTypes.some((name) => MAGAZINE_TYPE_NAMES.has(name))) return 'magazine'
   if (perkTypes.some((name) => name.includes('barrel'))) return 'barrel'
   if (perkTypes.some((name) => name.includes('magazine'))) return 'magazine'
   if (perkTypes.some((name) => name.includes('trait') || name.includes('perk'))) return 'trait'
