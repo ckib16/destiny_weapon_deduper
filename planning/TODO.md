@@ -13,7 +13,7 @@
 
 ### Condensed view cards
 Consider these stats
-- [ ] Copies
+- [x] Copies
 - [ ] Completion bar that tracks "desired perks" vs "owned perks" (will be 100% if have all desired perks)
 - [ ] Would need concept of user-selected "desired perks" that live in state and don't go away; maybe even exported in some format for safety
 
