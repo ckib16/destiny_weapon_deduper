@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue'
 import WeaponsView from '@/views/WeaponsView.vue'
 import CallbackView from '@/views/CallbackView.vue'
 import WeaponDetailView from '@/views/WeaponDetailView.vue'
+import PlaygroundView from '@/views/PlaygroundView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -24,6 +25,11 @@ const router = createRouter({
       name: 'weapon-detail',
       component: WeaponDetailView,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/playground',
+      name: 'playground',
+      component: PlaygroundView
     },
     {
       path: '/callback',
