@@ -32,3 +32,5 @@ Consider these stats
   - [ ] Add "Intrinsic Trait" (Example "High-Impact Frame")
   - [ ] Add "Masterwork" (Example "Masterwork: Range")
 - [ ] When hover over any Trait that Bungie provides a description for, show pop up text description from Bungie (example: hovering over "Attrition Orbs" trait shows "Dealing sustained power creates an Orb of Power")
+- [ ] Fix designation of which perks are owned
+  - Curretly: app shows which the aggregation of perks **currently selected** right now on weapon, not an aggregation of **all perks that exist on a weapon**
