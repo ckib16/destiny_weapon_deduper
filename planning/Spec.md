@@ -1,10 +1,20 @@
 # D3 Deduper Specification
 
-## Goal / Use case
+## Goals / Modes (Use Cases)
+### Goals
 1. User has a large collection of Destiny 2 weapons
 2. User wants to just play Destiny 2 now, and worry about inventory management later
 3. User would like an app on a "second screen" to help them see progress towards acquiring their personal "god roll" weapon while they play
 4. After playing, User wants help deduplicating their weapon rolls to save vault space while keeping the god roll they want
+
+### Modes
+#### Farming mode
+User: "I just want to play Destiny 2 and collect loot, don't ask me questions right now. Just show me which perks I have collected on this new weapon I'm farming for. I'll muck around in my inventory later when I'm ready to make decisions."
+- Likely filled by Punchcard UI & Coverage UI
+
+#### "Dedupe" mode (Deduplication)
+User: "I want to tidy up my inventory. I know what "god rolls" I want to keep, show me which weapons I can dismantle and which I should keep."
+- Likely filled by God Roll UI
 
 ## Bungie Weapon Information
 - Assume all weapons are Tier 5 for simplicity now
@@ -33,29 +43,23 @@
     - [ ] Make sure tooltip shows the icon from the Enhanced trait, not the Basic trait
 
 
-## Modes
-### Farming mode
-User: "I just want to play Destiny 2 and collect loot, don't ask me questions right now. Just show me which perks I have collected on this new weapon I'm farming forI'll muck around in my inventory later when I'm ready to make decisions."
 
-### "Dedupe" mode (Deduplication)
-User: "I want to tidy up my inventory. I know what "god rolls" I want to keep, show me which weapons I can dismantle and which I should keep."
 
 ## UI
-### Inventory view
+### Weapons view (Inventory view)
 Show all weapons, with identical weapons grouped together
 - Example: 5 copies of "Anonymous Autumn" legendary primary sidearms only show 1 card, with a count of 5
 - Stats to show on card:
     - Copies
-    - Perks Owned Across All Copies
-        - Owned Perks / Possible Perks
-        - Shown as a horizontal bar, filled in with percentage of owned perks, and the text of owned / possible perks shown over top
-- TODO
-    - [ ] Filters similar to https://d2foundry.gg/
-        - Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
+    - [ ] Perks Owned Across All Copies
+        - [ ] Owned Perks / Possible Perks
+        - [ ] Shown as a horizontal bar, filled in with percentage of owned perks, and the text of owned / possible perks shown over top
+- [ ] Add filters below the search bar similar to D2Foundry - https://d2foundry.gg/
+    - [ ] Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
 
-### Dedupe view
+### Weapons Detail View (Dedupe screen with multiple views of a single weapon)
 Workflow
-- User clicks a weapon in the inventory view
+- User clicks a weapon in the Weapons view
 - Brought to new view showing detailed / punchcard UI
 
 #### Punchcard UI
@@ -63,7 +67,7 @@ Workflow
 - Shows typical Destiny 2 "weapon perks grid" similar to DIM, Foundry.gg, Light.gg etc.
 - ![alt text](punchcard_ui.png)
 
-#### "Coverage"??? UI
+#### Coverage UI
 Idea only
 - [ ] need new name for "Coverage"; idea is you want more granular view over what weapon instances are contributing to each Punchcard trait being highlighted / filled in / covered
 
@@ -106,14 +110,56 @@ Workflow
     - Maximum traits per column should follow the Bungie API limit for Tier 5 weapons (see "Bungie Weapon Information" section above for limits)
 - God Roll profile should be saved to local storage
 - User should be able to Create, Edit, and Delete God Roll profiles
+- [ ] God Roll profile should have a text notes section at the bottom of the profile
+- [ ] Export curated God Rolls
+    - [ ] I need a crowd-sourced way for people to submit their God Rolls to the list for everyone to use, then I approve them and add them to the list for everyone to use
+    - [ ] Possible way ahead: people can edit a group of God Rolls in app. Then build an "export" function that exports the God Rolls as a JSON file, and submit them as a "curated list" to me, then I approve them and add them to the list for everyone to use 
+
+##### Streamer Picks (Section in the God Roll view)
+- [ ] Streamer Selections: ability to have curated list of God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
+    - Idea if for an admin-only list of pre-made / curated God Rolls that can be selected / viewed / used on the God Roll view. Need some way for admin to add curated God Rolls to the list
+- Workflow Idea: 
+    - [ ] Add a new "Streamer Picks" button in the God Roll view
+    - [ ] Clicking "Streamer Picks" button opens a new "Streamer Picks" view with a list of curated, pre-filled God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
+        - [ ] Streamer picks should include PVE/PVP, Streamer name, link to their web page or YouTube video timestamped clip of the God Roll
+    - [ ] Clicking "Save this to my God Roll list" button saves the God Roll to the user's unique God Roll list and returns them to their God Roll view
+    - [ ] For me and other Admins, an "Edit Streamer Picks" button in the new "Streamer Picks" view allowing me to create, edit, and delete curated God Rolls in the same way as the "Edit God Roll" button in the God Roll view
+    - In a sense, the "Streamer Picks" section is just another "God Roll" view that only I control & curate, but that is published to everyone for their use
+- Big news - this wishlist creation / distribution capability exists already in GUI form - 
+    - Pre-built wishlists & wishlist creation tools are already available
+        - Can use these prebuilt wishlists as a starting point for the "Streamer Picks" section
+        - Can then add my own curated wishlists to the list for everyone to use from (Aztecross, Mave, Coolgut / PVE & PVP)
+    - Likely workflow:
+        - Existing / pre-builtwishlists: 
+            - Get D3 app to import existing wishlists from GitHub
+            - See instructions for AI to learn how wishlists are structured here - https://github.com/DestinyItemManager/DIM/wiki/Creating-Wish-Lists#constructing-wish-list-rolls-manually
+            - Show some pre-built wishlists from in our D3 app they can toggle on / off easily from top of the "Streamer Picks" section
+            - Provide way to auto-update wishlists from GitHub
+            - Show "Current as of" date for pre-made wishlists with date linking to GitHub commit
+        - New wishlists (if user REALLY wants to make wishlist instead of using our own in-app "Save God Roll" feature): 
+            - provide users instructions on how to create LittleLight wishlists with D3 app (see https://github.com/DestinyItemManager/DIM/wiki/Creating-Wish-Lists for instructions)
+            - Instructions from DIM Discord channel: 
+                - 1. go to this website. https://wishlists.littlelight.club/
+                - 2. click create new wishlist
+                - 3. give it a name and description
+                - 4. click create
+                - 5. click add item
+                - 6. search for / select an item
+                - 7. select the perks you want on a roll
+                - 8. add tags / name / description to that roll
+                - 9. click save build
+                - 10. repeat for more rolls.
+                - 11. once complete, click export wishlist and choose DIM as the type. that will save a file.
+                - 12. go to DIM > settings > wishlist and click load wish list rolls
+                - 13. select your file.
 
 ### Future goals
-- Notifications when God Roll profile is reached
-    - User can enable / disable notifications
-    - User can set notification threshold (e.g. 50%, 75%, 100%)
+
 - "God Roll" percentage chance section
     - Should show percentage chance of acquireing your selected god roll given a single Tier 5 weapon drop
     - Example: "you selected 2 perks for column 1 using "and" logic, 2 perks for column 2 using "or" logic, 2 perks for column 3 using "and" logic, 2 perks for column 4 using "or" logic, 2 perks for column 5 using "and" logic, 2 perks for origin traits using "or" logic. Given that you expect to drop at Tier 5, you have a 10% chance of getting this god roll."
     - Need vocabulary to differentiate between "and" and "or" logic. Goal is to show that you have better odds if you are less choosy with 2 perks using "or" logic rather than **requiring** 2 perks with "and" logic.
-- Streamer Picks ("Give me my opinion" list)
-  - curated list of god roll profilesfrom Streamers, Light.gg, Blueberry.gg, other soruces already populated in app for user to select from
+- [ ] CapacitorJS or similar for web app → iOS app (also works for android) 
+    - [ ] Notifications when God Roll profile is reached
+        - [ ] User can enable / disable notifications
+        - [ ] User can set notification threshold (e.g. 50%, 75%, 100%)

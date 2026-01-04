@@ -82,3 +82,17 @@ Consider these stats
   - [x] Delete button doesn't work - shows quick popup then pop-up disappears
   - [x] Saving a new God Roll rofile overwrites the existing profile; it doesn't add a second or third profile etc.
 
+2026-01-04
+2026-01-04 - 1251L
+- [x] Add current punchcard UI / "Overview" view to playground to make sure AI knows I want to preserve it
+  - [x] So 3 total views in Weapons Detail View: Overview, Coverage, God Roll
+
+Later
+- [ ] Merge playground into main app on a separate branch
+  - [ ] check out branch; if good merge into main branch
+
+
+
+
+
+
