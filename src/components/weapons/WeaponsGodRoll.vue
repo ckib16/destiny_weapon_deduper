@@ -18,7 +18,7 @@
               <span class="w-px h-3 bg-gray-600"></span>
               <span class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span class="text-gray-300">Optional Perk (Shift+Click)</span>
+                <span class="text-gray-300">Nice to Have / Optional Perk (Shift+Click)</span>
               </span>
             </div>
              <button 
