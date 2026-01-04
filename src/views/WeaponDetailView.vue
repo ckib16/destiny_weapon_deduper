@@ -22,17 +22,49 @@
     </div>
 
     <div v-else>
-      <WeaponCard :weapon="selectedWeapon" />
+      <!-- Tabs -->
+      <div class="mb-6 border-b border-gray-800">
+        <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="activeTab = tab.id"
+            class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors"
+            :class="[
+              activeTab === tab.id
+                ? 'border-blue-500 text-blue-400'
+                : 'border-transparent text-gray-500 hover:text-gray-300 hover:border-gray-700'
+            ]"
+          >
+            {{ tab.label }}
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div v-if="activeTab === 'overview'">
+        <WeaponCard :weapon="selectedWeapon" />
+      </div>
+      
+      <div v-else-if="activeTab === 'coverage'">
+        <WeaponsCoverage :weapon="selectedWeapon" />
+      </div>
+
+      <div v-else-if="activeTab === 'godroll'">
+        <WeaponsGodRoll :weapon="selectedWeapon" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWeaponsStore } from '@/stores/weapons'
 import { useAuthStore } from '@/stores/auth'
 import WeaponCard from '@/components/weapons/WeaponCard.vue'
+import WeaponsCoverage from '@/components/weapons/WeaponsCoverage.vue'
+import WeaponsGodRoll from '@/components/weapons/WeaponsGodRoll.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
 
@@ -49,6 +81,15 @@ const selectedWeapon = computed(() => {
   if (!Number.isFinite(weaponHash.value)) return null
   return weaponsStore.weapons.find(weapon => weapon.weaponHash === weaponHash.value) || null
 })
+
+// Tab State
+const activeTab = ref<'overview' | 'coverage' | 'godroll'>('overview')
+
+const tabs = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'coverage', label: 'Perk Coverage' },
+  { id: 'godroll', label: 'God Roll' }
+] as const
 
 const loadWeapons = async () => {
   if (authStore.destinyMemberships.length === 0) {

@@ -87,9 +87,27 @@ Consider these stats
 - [x] Add current punchcard UI / "Overview" view to playground to make sure AI knows I want to preserve it
   - [x] So 3 total views in Weapons Detail View: Overview, Coverage, God Roll
 
-Later
-- [ ] Merge playground into main app on a separate branch
-  - [ ] check out branch; if good merge into main branch
+2026-01-04 - 1315L
+- [x] Merge playground into main app on a separate branch
+  - Desired end state: 
+    - Main app has 3 views in Weapons Detail View: Overview, Coverage, God Roll
+      - Overview = current Weapons Detail View in main app, no conversion needed from Playground
+      - Coverage = Coverage View from Playground converted for Vue / Vercel use
+      - God Roll = God Roll View from Playground converted for Vue / Vercel use
+
+2026-01-04 - 1336L
+- [x] Refine branch structure
+  - [x] Overview tab - no changes needed
+  - [x] Coverage tab: Change name to "Perk Coverage"
+  - [x] God Roll tab: 
+    - [x] And / Or button descriptions: I'm thinking I want to simplify the intent. Let's call "And" → "Mandatory" and "Or" → "Optional". I think that accomplishes the same intent as the previous description but in a much simpler way. Keep the click & shift click behavior the same.
+    - [x] "+New Profile" should be renamed "Clear Perks" to better reflect what it does 
+    - [x] As I understand it now, we've removed the "Load Profile" buttonwhioch makes sense. To load the profile they simply click on the profile name in the "Saved God Rolls" section. To clear the profile, they click on the "Clear Perks" button. Is that correct?
+    - [x] Update Profile UI: change "Save Copy" to "Save as New God Roll" and change color to green
+
+    
+
+
 
 
 
