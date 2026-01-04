@@ -12,13 +12,13 @@
              <!-- Legend -->
             <div class="flex items-center gap-3 text-xs bg-gray-800/50 px-3 py-1.5 rounded-full border border-gray-700/50">
               <span class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span class="text-gray-300">Optional Perk (Click)</span>
+                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                <span class="text-gray-300">Required Perk (Click)</span>
               </span>
               <span class="w-px h-3 bg-gray-600"></span>
               <span class="flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
-                <span class="text-gray-300">Required Perk (Shift+Click)</span>
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span class="text-gray-300">Optional Perk (Shift+Click)</span>
               </span>
             </div>
              <button 
@@ -235,14 +235,14 @@ const toggleSelection = (perkHash: number, event: MouseEvent) => {
   
   if (current) {
     if (event.shiftKey) {
-        if (current === 'OR') selection.value[perkHash] = 'AND'
+        if (current === 'AND') selection.value[perkHash] = 'OR'
         else delete selection.value[perkHash]
     } else {
         delete selection.value[perkHash]
     }
   } else {
-    // New selection
-    selection.value[perkHash] = event.shiftKey ? 'AND' : 'OR'
+    // New selection: Click = AND, Shift+Click = OR
+    selection.value[perkHash] = event.shiftKey ? 'OR' : 'AND'
   }
 }
 
