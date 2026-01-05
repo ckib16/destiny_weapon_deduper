@@ -60,10 +60,9 @@
         <div
           v-for="pick in picks"
           :key="pick.id"
-          class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors cursor-pointer relative"
-          @click="emit('saveToMyRolls', pick)"
+          class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors relative"
         >
-          <div class="flex justify-between items-start">
+          <div class="flex justify-between items-start mb-2">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-1.5 mb-1">
                 <h5 class="font-bold text-sm text-gray-200 truncate">{{ pick.name }}</h5>
@@ -79,8 +78,8 @@
               </p>
             </div>
 
-            <!-- Actions -->
-            <div class="flex items-center gap-1 ml-2" @click.stop>
+            <!-- Top-right Actions (source link, admin edit/delete) -->
+            <div class="flex items-center gap-1 ml-2">
               <a
                 v-if="pick.sourceUrl"
                 :href="pick.sourceUrl"
@@ -113,6 +112,21 @@
                 </button>
               </template>
             </div>
+          </div>
+
+          <!-- Add to God Rolls Button -->
+          <button
+            v-if="!isPickAlreadySaved(pick)"
+            @click="emit('saveToMyRolls', pick)"
+            class="w-full text-[10px] px-2 py-1.5 rounded bg-green-700 hover:bg-green-600 text-white border border-green-600 transition-colors"
+          >
+            Add to my God Rolls
+          </button>
+          <div
+            v-else
+            class="w-full text-[10px] px-2 py-1.5 rounded bg-gray-700 text-gray-400 border border-gray-600 text-center"
+          >
+            Already saved
           </div>
         </div>
       </div>
@@ -285,6 +299,7 @@ import { communityPicksService } from '@/services/community-picks-service'
 const props = defineProps<{
   weapon: DedupedWeapon
   currentSelection?: Record<number, SelectionType>
+  savedProfileNames?: Set<string>
 }>()
 
 const emit = defineEmits<{
@@ -342,6 +357,11 @@ const getPerkName = (hash: number): string => {
     }
   }
   return `Perk ${hash}`
+}
+
+const isPickAlreadySaved = (pick: CommunityPick): boolean => {
+  if (!props.savedProfileNames) return false
+  return props.savedProfileNames.has(pick.name.toLowerCase())
 }
 
 const getCategoryClasses = (category: string) => {

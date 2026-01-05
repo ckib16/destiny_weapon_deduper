@@ -4,6 +4,7 @@
     <CommunityPicks
       :weapon="weapon"
       :currentSelection="selection"
+      :savedProfileNames="savedProfileNamesSet"
       @save-to-my-rolls="handleSaveCommunityPick"
     />
 
@@ -463,6 +464,11 @@ const isNameUnique = (name: string, excludeId?: string): boolean => {
         p.id !== excludeId
     )
 }
+
+// Set of saved profile names (lowercase) for CommunityPicks to check duplicates
+const savedProfileNamesSet = computed(() => {
+    return new Set(savedProfiles.value.map(p => p.name.toLowerCase()))
+})
 
 // Button state computed properties
 const buttonLabel = computed(() => {
