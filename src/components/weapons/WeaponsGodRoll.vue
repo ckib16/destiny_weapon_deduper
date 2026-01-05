@@ -91,8 +91,12 @@
               <div>
                  <label class="flex items-center gap-1.5 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
                     God Roll Name
-                    <!-- Help tooltip -->
-                    <span class="relative group/tooltip cursor-help">
+                    <!-- Lock icon for community picks -->
+                    <svg v-if="isCurrentProfileLocked" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" title="Community Pick - name locked">
+                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <!-- Help tooltip (hide when locked) -->
+                    <span v-if="!isCurrentProfileLocked" class="relative group/tooltip cursor-help">
                        <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-600 text-[9px] font-bold text-gray-300 hover:bg-gray-500 transition-colors">?</span>
                        <span class="absolute left-0 bottom-full mb-2 hidden group-hover/tooltip:block z-50 w-56 p-2 text-xs font-normal normal-case tracking-normal bg-gray-900 border border-gray-600 rounded-lg shadow-xl text-gray-200">
                           <span class="font-semibold text-gray-100 block mb-1">Saving Logic:</span>
@@ -103,15 +107,22 @@
                        </span>
                     </span>
                  </label>
-                 <input
-                    v-model="profileNameInput"
-                    type="text"
-                    placeholder="e.g. PvP God Roll"
-                    class="w-full bg-gray-900 border rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600"
-                    :class="saveError ? 'border-red-500' : 'border-gray-600'"
-                    @keyup.enter="handleSave"
-                 />
+                 <div class="relative">
+                    <input
+                       v-model="profileNameInput"
+                       type="text"
+                       placeholder="e.g. PvP God Roll"
+                       :readonly="isCurrentProfileLocked"
+                       class="w-full bg-gray-900 border rounded px-3 py-2 text-sm text-white focus:outline-none placeholder-gray-600"
+                       :class="[
+                          saveError ? 'border-red-500' : 'border-gray-600',
+                          isCurrentProfileLocked ? 'cursor-not-allowed opacity-75' : 'focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                       ]"
+                       @keyup.enter="handleSave"
+                    />
+                 </div>
                  <p v-if="saveError" class="text-xs text-red-400 mt-1">{{ saveError }}</p>
+                 <p v-if="isCurrentProfileLocked" class="text-xs text-purple-400 mt-1">Community Pick - change perks to save as your own roll</p>
               </div>
 
               <div>
@@ -151,8 +162,11 @@
               >
                  <div class="flex justify-between items-start">
                     <div class="min-w-0">
-                       <h5 class="font-bold text-sm text-gray-200 truncate">
-                          {{ profile.name }}
+                       <h5 class="font-bold text-sm text-gray-200 truncate flex items-center gap-1.5">
+                          <svg v-if="profile.isFromCommunityPick" xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-purple-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" title="Community Pick">
+                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                          <span class="truncate">{{ profile.name }}</span>
                        </h5>
                        <p class="text-[10px] text-gray-500 mt-1 truncate">
                           {{ Object.keys(profile.selection).length }} perks selected
@@ -345,6 +359,7 @@ interface SavedProfile {
   name: string
   notes?: string
   selection: Record<number, SelectionType>
+  isFromCommunityPick?: boolean // Locked - name can't be changed
   showDeleteConfirm?: boolean // UI state
 }
 
@@ -438,6 +453,36 @@ watch(profileNameInput, () => {
     if (saveError.value) saveError.value = null
 })
 
+// When selection changes on a locked community pick, unlock it for "Save as New"
+watch(selection, (newSelection) => {
+    if (!isCurrentProfileLocked.value) return
+
+    const profile = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    if (!profile) return
+
+    // Check if selection differs from the saved profile
+    const currentKeys = Object.keys(newSelection)
+    const profileKeys = Object.keys(profile.selection)
+
+    let isDifferent = currentKeys.length !== profileKeys.length
+    if (!isDifferent) {
+        for (const key of currentKeys) {
+            const perkHash = Number(key)
+            if (newSelection[perkHash] !== profile.selection[perkHash]) {
+                isDifferent = true
+                break
+            }
+        }
+    }
+
+    if (isDifferent) {
+        // Unlock: clear the profile reference and name so user must "Save as New"
+        currentProfileId.value = null
+        profileNameInput.value = ''
+        profileNotesInput.value = ''
+    }
+}, { deep: true })
+
 // Check if a profile's selection exactly matches the current selection
 const isProfileActive = (profile: SavedProfile): boolean => {
     const currentKeys = Object.keys(selection.value)
@@ -468,6 +513,13 @@ const isNameUnique = (name: string, excludeId?: string): boolean => {
 // Set of saved profile names (lowercase) for CommunityPicks to check duplicates
 const savedProfileNamesSet = computed(() => {
     return new Set(savedProfiles.value.map(p => p.name.toLowerCase()))
+})
+
+// Check if current profile is a locked community pick
+const isCurrentProfileLocked = computed(() => {
+    if (!currentProfileId.value) return false
+    const profile = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    return profile?.isFromCommunityPick === true
 })
 
 // Button state computed properties
@@ -517,7 +569,8 @@ const handleSaveCommunityPick = (pick: CommunityPick) => {
         id: existingIdx >= 0 ? savedProfiles.value[existingIdx].id : crypto.randomUUID(),
         name: pick.name,
         notes: pick.notes,
-        selection: { ...pick.selection }
+        selection: { ...pick.selection },
+        isFromCommunityPick: true // Mark as locked community pick
     }
 
     if (existingIdx >= 0) {
