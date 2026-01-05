@@ -3,3 +3,48 @@
   "lastUpdated": "2025-01-05T12:00:00Z",
   "picks": []
 }
+{
+  "version": "1.0",
+  "lastUpdated": "2026-01-05T19:00:43.075Z",
+  "picks": [
+    {
+      "id": "086597b5-f1da-4aa1-a0a3-17b433e498ef",
+      "name": "SZ test",
+      "weaponHash": 3615748501,
+      "category": "PVE",
+      "streamer": {
+        "name": "SZ"
+      },
+      "sourceUrl": "test",
+      "notes": "test2",
+      "selection": {
+        "198336270": "AND",
+        "1621842933": "AND",
+        "1918398421": "AND",
+        "2955427634": "AND",
+        "4196967425": "AND"
+      },
+      "createdAt": "2026-01-05T18:51:52.309Z",
+      "updatedAt": "2026-01-05T18:51:52.309Z"
+    },
+    {
+      "id": "86c93e7d-0e19-4746-a98c-3b132846a953",
+      "name": "",
+      "weaponHash": 3615748501,
+      "category": "PVE",
+      "streamer": {
+        "name": ""
+      },
+      "selection": {
+        "198336270": "AND",
+        "1621842933": "AND",
+        "1918398421": "AND",
+        "2955427634": "AND",
+        "3454102905": "AND",
+        "4196967425": "AND"
+      },
+      "createdAt": "2026-01-05T19:00:43.075Z",
+      "updatedAt": "2026-01-05T19:00:43.075Z"
+    }
+  ]
+}

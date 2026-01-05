@@ -140,7 +140,7 @@
         <!-- Saved Profiles List -->
         <div v-if="savedProfiles.length > 0" class="space-y-3 pt-4 border-t border-gray-700/50">
            <h4 class="font-bold text-sm text-gray-400 uppercase tracking-wider">Saved God Rolls</h4>
-           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               <div
                  v-for="profile in savedProfiles"
                  :key="profile.id"

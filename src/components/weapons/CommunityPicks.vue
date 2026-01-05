@@ -13,6 +13,23 @@
         >
           {{ picks.length }}
         </span>
+        <!-- Admin Mode Tooltip -->
+        <span v-if="isAdminMode" class="relative group/tooltip cursor-help" @click.stop>
+          <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-600 text-[10px] font-bold text-white">?</span>
+          <span class="absolute left-0 bottom-full mb-2 hidden group-hover/tooltip:block z-50 w-72 p-3 text-xs font-normal bg-gray-900 border border-amber-600 rounded-lg shadow-xl text-gray-200">
+            <span class="font-bold text-amber-300 block mb-2">Admin Mode - How to add picks:</span>
+            <ol class="list-decimal list-inside space-y-1 text-gray-400 text-[11px]">
+              <li>Select perks in God Roll Creator below</li>
+              <li>Click + Add Community Pick</li>
+              <li>Fill form & click Copy from God Roll Creator</li>
+              <li>Click Add Pick (JSON copied)</li>
+              <li>Paste into data/community-picks.json</li>
+              <li>Commit & push to repo</li>
+            </ol>
+            <span class="block mt-2 text-[10px] text-amber-400">Changes are temporary until committed.</span>
+            <span class="absolute left-4 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-amber-600"></span>
+          </span>
+        </span>
       </div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -28,130 +45,86 @@
 
     <!-- Collapsible Content -->
     <div v-show="isExpanded" class="animate-in fade-in slide-in-from-top-2 duration-200">
-      <!-- Admin Mode: Two Column Layout -->
-      <div :class="isAdminMode ? 'grid grid-cols-1 lg:grid-cols-3 gap-4' : ''">
-        <!-- Left Column: Picks List -->
-        <div :class="isAdminMode ? 'lg:col-span-2' : ''" class="space-y-3">
-          <!-- Loading State -->
-          <div v-if="loading" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
-            <span class="text-gray-400 text-sm">Loading community picks...</span>
-          </div>
-
-          <!-- Empty State (only show in admin mode) -->
-          <div v-else-if="picks.length === 0 && isAdminMode" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
-            <span class="text-gray-400 text-sm">No community picks for this weapon yet.</span>
-          </div>
-
-          <!-- Pick Cards -->
-          <div
-            v-for="pick in picks"
-            :key="pick.id"
-            class="bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-3"
-          >
-        <!-- Header: Name + Tags + Source -->
-        <div class="flex items-start justify-between gap-2">
-          <div class="flex items-center gap-2 flex-wrap min-w-0">
-            <h5 class="font-bold text-sm text-gray-200">{{ pick.name }}</h5>
-            <span
-              class="text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide"
-              :class="getCategoryClasses(pick.category)"
-            >
-              {{ pick.category }}
-            </span>
-            <span class="text-xs text-gray-500">by {{ pick.streamer.name }}</span>
-          </div>
-          <a
-            v-if="pick.sourceUrl"
-            :href="pick.sourceUrl"
-            target="_blank"
-            class="flex-shrink-0 text-gray-400 hover:text-blue-400 transition-colors"
-            title="View source"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-            </svg>
-          </a>
-        </div>
-
-        <!-- Notes -->
-        <p v-if="pick.notes" class="text-xs text-gray-400 italic">{{ pick.notes }}</p>
-
-        <!-- Selected Perks Preview -->
-        <div class="flex flex-wrap gap-1">
-          <span
-            v-for="(type, hash) in pick.selection"
-            :key="hash"
-            class="text-[9px] px-1.5 py-0.5 rounded"
-            :class="getPerkPreviewClass(type)"
-          >
-            {{ getPerkName(Number(hash)) }}
-          </span>
-        </div>
-
-        <!-- Actions -->
-        <div class="flex items-center justify-between pt-2 border-t border-gray-700/50">
-          <button
-            @click="emit('saveToMyRolls', pick)"
-            class="text-xs px-3 py-1.5 rounded bg-green-700 hover:bg-green-600 text-white border border-green-600 transition-colors"
-          >
-            Save to my God Rolls
-          </button>
-
-          <!-- Admin Actions -->
-          <div v-if="isAdminMode" class="flex items-center gap-2">
-            <button
-              @click="editPick(pick)"
-              class="text-xs px-2 py-1 rounded bg-blue-900/50 hover:bg-blue-900 text-blue-200 border border-blue-800 transition-colors"
-            >
-              Edit
-            </button>
-            <button
-              @click="confirmDelete(pick.id)"
-              class="text-xs px-2 py-1 rounded bg-red-900/50 hover:bg-red-900 text-red-200 border border-red-800 transition-colors"
-            >
-              Delete
-            </button>
-          </div>
-        </div>
+      <!-- Loading State -->
+      <div v-if="loading" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
+        <span class="text-gray-400 text-sm">Loading community picks...</span>
       </div>
 
-          <!-- Admin: Add New Button -->
-          <button
-            v-if="isAdminMode"
-            @click="showAddForm = true"
-            class="w-full p-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
-          >
-            + Add Community Pick
-          </button>
-        </div>
+      <!-- Empty State (only show in admin mode) -->
+      <div v-else-if="picks.length === 0 && isAdminMode" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
+        <span class="text-gray-400 text-sm">No community picks for this weapon yet.</span>
+      </div>
 
-        <!-- Right Column: Admin Instructions (only in admin mode) -->
-        <div v-if="isAdminMode" class="space-y-3">
-          <div class="bg-amber-900/20 border border-amber-700/50 rounded-lg p-4">
-            <h5 class="font-bold text-sm text-amber-300 mb-3 flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Admin Mode
-            </h5>
-            <div class="space-y-3 text-xs text-gray-300">
-              <p class="font-semibold text-amber-200">How to add a Community Pick:</p>
-              <ol class="list-decimal list-inside space-y-1.5 text-gray-400">
-                <li>Select perks in <span class="text-white">God Roll Creator</span> below</li>
-                <li>Click <span class="text-white">+ Add Community Pick</span></li>
-                <li>Fill form &amp; click <span class="text-white">Copy from God Roll Creator</span></li>
-                <li>Click <span class="text-white">Add Pick</span> (JSON copied to clipboard)</li>
-                <li>Paste into <code class="bg-gray-800 px-1 rounded">data/community-picks.json</code></li>
-                <li>Commit &amp; push to repo</li>
-              </ol>
-              <div class="mt-3 pt-3 border-t border-amber-700/30">
-                <p class="text-amber-400/80 text-[10px] uppercase tracking-wider font-bold">Warning</p>
-                <p class="text-gray-500 mt-1">Changes are temporary until committed. Refreshing the page will lose unsaved picks.</p>
+      <!-- Pick Cards Grid - matches Saved God Rolls layout -->
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div
+          v-for="pick in picks"
+          :key="pick.id"
+          class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors cursor-pointer relative"
+          @click="emit('saveToMyRolls', pick)"
+        >
+          <div class="flex justify-between items-start">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-1.5 mb-1">
+                <h5 class="font-bold text-sm text-gray-200 truncate">{{ pick.name }}</h5>
+                <span
+                  class="text-[9px] font-bold px-1 py-0.5 rounded uppercase"
+                  :class="getCategoryClasses(pick.category)"
+                >
+                  {{ pick.category }}
+                </span>
               </div>
+              <p class="text-[10px] text-gray-500 truncate">
+                by {{ pick.streamer.name }} · {{ Object.keys(pick.selection).length }} perks
+              </p>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-1 ml-2" @click.stop>
+              <a
+                v-if="pick.sourceUrl"
+                :href="pick.sourceUrl"
+                target="_blank"
+                class="p-1 text-gray-500 hover:text-blue-400 rounded transition-colors"
+                title="View source"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+              <template v-if="isAdminMode">
+                <button
+                  @click="editPick(pick)"
+                  class="p-1 text-gray-500 hover:text-blue-400 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Edit"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  </svg>
+                </button>
+                <button
+                  @click="confirmDelete(pick.id)"
+                  class="p-1 text-gray-500 hover:text-red-400 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+                  title="Delete"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+              </template>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Admin: Add New Button -->
+      <button
+        v-if="isAdminMode"
+        @click="showAddForm = true"
+        class="w-full mt-3 p-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
+      >
+        + Add Community Pick
+      </button>
 
       <!-- Admin: Add/Edit Form Modal -->
       <div
