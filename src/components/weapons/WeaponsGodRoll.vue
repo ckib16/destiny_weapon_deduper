@@ -79,10 +79,21 @@
 
         <!-- Inline Save / Update Form -->
         <div v-if="hasSelection" class="bg-gray-800/80 rounded-lg border border-gray-700 p-4 animate-in fade-in slide-in-from-top-2 duration-200">
-           <div class="flex items-center gap-3">
-              <div class="flex-1">
-                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                    {{ currentProfileId ? 'Update God Roll' : 'Save As God Roll' }}
+           <div class="space-y-3">
+              <div>
+                 <label class="flex items-center gap-1.5 text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                    God Roll Name
+                    <!-- Help tooltip -->
+                    <span class="relative group/tooltip cursor-help">
+                       <span class="inline-flex items-center justify-center w-3.5 h-3.5 rounded-full bg-gray-600 text-[9px] font-bold text-gray-300 hover:bg-gray-500 transition-colors">?</span>
+                       <span class="absolute left-0 bottom-full mb-2 hidden group-hover/tooltip:block z-50 w-56 p-2 text-xs font-normal normal-case tracking-normal bg-gray-900 border border-gray-600 rounded-lg shadow-xl text-gray-200">
+                          <span class="font-semibold text-gray-100 block mb-1">Saving Logic:</span>
+                          <span class="block text-gray-300">Same name → Updates existing</span>
+                          <span class="block text-gray-300">Different name → Saves as new</span>
+                          <!-- Arrow -->
+                          <span class="absolute left-3 top-full w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-gray-600"></span>
+                       </span>
+                    </span>
                  </label>
                  <input
                     v-model="profileNameInput"
@@ -94,7 +105,20 @@
                  />
                  <p v-if="saveError" class="text-xs text-red-400 mt-1">{{ saveError }}</p>
               </div>
-              <div class="flex items-end gap-2 h-full pt-5">
+
+              <div>
+                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                    Notes
+                 </label>
+                 <textarea
+                    v-model="profileNotesInput"
+                    placeholder="Optional notes about this God Roll..."
+                    rows="3"
+                    class="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600 resize-none"
+                 />
+              </div>
+
+              <div class="flex justify-end">
                  <button
                     @click="handleSave"
                     class="px-4 py-2 rounded text-sm font-medium transition-colors"
@@ -242,6 +266,7 @@ const clearSelection = () => {
   selection.value = {}
   currentProfileId.value = null
   profileNameInput.value = ''
+  profileNotesInput.value = ''
 }
 
 // --- Matching Logic ---
@@ -308,6 +333,7 @@ const isMatch = (instId: string) => {
 interface SavedProfile {
   id: string
   name: string
+  notes?: string
   selection: Record<number, SelectionType>
   showDeleteConfirm?: boolean // UI state
 }
@@ -315,6 +341,7 @@ interface SavedProfile {
 const savedProfiles = ref<SavedProfile[]>([])
 const currentProfileId = ref<string | null>(null)
 const profileNameInput = ref('')
+const profileNotesInput = ref('')
 const saveError = ref<string | null>(null)
 
 const STORAGE_KEY = computed(() => `d3_godroll_${props.weapon.weaponHash}`)
@@ -341,8 +368,14 @@ const handleSave = () => {
         return
     }
 
-    // Check name uniqueness
-    const isUpdate = currentProfileId.value && !isProfileModified.value
+    // Determine if this is an update (same name) or create new (different name)
+    const loadedProfile = currentProfileId.value
+        ? savedProfiles.value.find(p => p.id === currentProfileId.value)
+        : null
+
+    const isUpdate = loadedProfile && trimmedName.toLowerCase() === loadedProfile.name.toLowerCase()
+
+    // Check name uniqueness (excluding current profile if updating)
     const excludeId = isUpdate ? currentProfileId.value ?? undefined : undefined
 
     if (!isNameUnique(trimmedName, excludeId)) {
@@ -353,18 +386,20 @@ const handleSave = () => {
     saveError.value = null
 
     if (isUpdate) {
-        // UPDATE MODE: Profile loaded and not modified (or just name changed)
+        // UPDATE MODE: Name matches loaded profile - overwrite it
         const idx = savedProfiles.value.findIndex(p => p.id === currentProfileId.value)
         if (idx !== -1) {
             savedProfiles.value[idx].selection = { ...selection.value }
             savedProfiles.value[idx].name = trimmedName
+            savedProfiles.value[idx].notes = profileNotesInput.value.trim() || undefined
         }
     } else {
-        // CREATE MODE: Fresh state OR profile modified
+        // CREATE MODE: Fresh state OR name changed - create new profile
         const newId = crypto.randomUUID()
         savedProfiles.value.push({
             id: newId,
             name: trimmedName,
+            notes: profileNotesInput.value.trim() || undefined,
             selection: { ...selection.value }
         })
         currentProfileId.value = newId
@@ -377,6 +412,7 @@ const loadProfile = (profile: SavedProfile) => {
     selection.value = { ...profile.selection }
     currentProfileId.value = profile.id
     profileNameInput.value = profile.name
+    profileNotesInput.value = profile.notes || ''
 }
 
 const deleteProfile = (id: string) => {
@@ -411,17 +447,6 @@ const isProfileActive = (profile: SavedProfile): boolean => {
     return true
 }
 
-// Check if loaded profile has been modified
-const isProfileModified = computed(() => {
-    if (!currentProfileId.value) return false
-
-    const loadedProfile = savedProfiles.value.find(p => p.id === currentProfileId.value)
-    if (!loadedProfile) return false
-
-    // Reuse isProfileActive logic - if it's active, it's NOT modified
-    return !isProfileActive(loadedProfile)
-})
-
 // Check if a name is unique (excluding a specific profile ID)
 const isNameUnique = (name: string, excludeId?: string): boolean => {
     return !savedProfiles.value.some(p =>
@@ -433,15 +458,30 @@ const isNameUnique = (name: string, excludeId?: string): boolean => {
 // Button state computed properties
 const buttonLabel = computed(() => {
     if (!currentProfileId.value) return 'Save God Roll'
-    if (isProfileModified.value) return 'Save as New God Roll'
-    return 'Update God Roll'
+
+    // Check if name matches the loaded profile's name
+    const loadedProfile = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    if (loadedProfile && profileNameInput.value.trim().toLowerCase() === loadedProfile.name.toLowerCase()) {
+        return 'Update God Roll'
+    }
+
+    return 'Save as New God Roll'
 })
 
 const buttonClasses = computed(() => {
-    if (!currentProfileId.value || isProfileModified.value) {
+    if (!currentProfileId.value) {
         return 'bg-green-700 hover:bg-green-600 text-white border border-green-600'
     }
-    return 'bg-blue-600 hover:bg-blue-500 text-white'
+
+    // Check if name matches the loaded profile's name
+    const loadedProfile = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    if (loadedProfile && profileNameInput.value.trim().toLowerCase() === loadedProfile.name.toLowerCase()) {
+        // Update mode - orange/amber color
+        return 'bg-orange-600 hover:bg-orange-500 text-white border border-orange-500'
+    }
+
+    // Save as new mode - green color
+    return 'bg-green-700 hover:bg-green-600 text-white border border-green-600'
 })
 
 // Load on mount/weapon change
