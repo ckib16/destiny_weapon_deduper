@@ -144,7 +144,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { DedupedWeapon, PerkColumn } from '@/models/deduped-weapon'
+import type { DedupedWeapon } from '@/models/deduped-weapon'
 import type { WeaponInstance } from '@/models/weapon-instance'
 import type { Perk } from '@/models/perk'
 

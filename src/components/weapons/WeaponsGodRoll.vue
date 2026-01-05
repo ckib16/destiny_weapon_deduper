@@ -215,7 +215,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import type { DedupedWeapon, PerkColumn } from '@/models/deduped-weapon'
+import type { DedupedWeapon } from '@/models/deduped-weapon'
 import type { WeaponInstance } from '@/models/weapon-instance'
 
 const props = defineProps<{
