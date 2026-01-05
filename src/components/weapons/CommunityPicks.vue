@@ -398,9 +398,8 @@ const editPick = (pick: CommunityPick) => {
     streamerName: pick.streamer.name,
     sourceUrl: pick.sourceUrl || '',
     notes: pick.notes || '',
-    // Don't copy pick's selection - keep empty so user can use "Copy from God Roll Creator"
-    // with their current God Roll Creator perks
-    selection: {}
+    // Pre-fill with saved perks - user can click "Copy from God Roll Creator" to update
+    selection: { ...pick.selection }
   }
   showAddForm.value = true
 }

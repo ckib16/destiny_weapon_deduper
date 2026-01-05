@@ -185,3 +185,8 @@ Workflow
     - [ ] Notifications when God Roll profile is reached
         - [ ] User can enable / disable notifications
         - [ ] User can set notification threshold (e.g. 50%, 75%, 100%)
+
+
+Fornt-end overhaul
+- let Claude use it's front-end skill and see what it looks like
+  - Curent pallete is kind of drab?
