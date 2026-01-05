@@ -82,7 +82,7 @@
            <div class="flex items-center gap-3">
               <div class="flex-1">
                  <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-                    {{ currentProfileId ? 'Update Profile' : 'Save As God Roll' }}
+                    {{ currentProfileId ? 'Update God Roll' : 'Save As God Roll' }}
                  </label>
                  <input
                     v-model="profileNameInput"
@@ -90,24 +90,17 @@
                     placeholder="e.g. PvP God Roll"
                     class="w-full bg-gray-900 border rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600"
                     :class="saveError ? 'border-red-500' : 'border-gray-600'"
-                    @keyup.enter="saveProfile(false)"
+                    @keyup.enter="handleSave"
                  />
                  <p v-if="saveError" class="text-xs text-red-400 mt-1">{{ saveError }}</p>
               </div>
               <div class="flex items-end gap-2 h-full pt-5">
                  <button
-                    @click="saveProfile(false)"
-                    class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm font-medium transition-colors"
+                    @click="handleSave"
+                    class="px-4 py-2 rounded text-sm font-medium transition-colors"
+                    :class="buttonClasses"
                  >
-                    {{ currentProfileId ? 'Save Changes' : 'Save God Roll' }}
-                 </button>
-
-                 <button
-                    v-if="currentProfileId"
-                    @click="saveProfile(true)"
-                    class="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded text-sm font-medium transition-colors border border-green-600"
-                 >
-                    Save as New God Roll
+                    {{ buttonLabel }}
                  </button>
               </div>
            </div>
@@ -339,32 +332,44 @@ const saveProfilesToStorage = () => {
     localStorage.setItem(STORAGE_KEY.value, JSON.stringify(savedProfiles.value))
 }
 
-const saveProfile = (saveCopy: boolean) => {
-    if (!profileNameInput.value.trim()) {
+const handleSave = () => {
+    const trimmedName = profileNameInput.value.trim()
+
+    // Validate name not empty
+    if (!trimmedName) {
         saveError.value = 'Name your God Roll before saving'
+        return
+    }
+
+    // Check name uniqueness
+    const isUpdate = currentProfileId.value && !isProfileModified.value
+    const excludeId = isUpdate ? currentProfileId.value ?? undefined : undefined
+
+    if (!isNameUnique(trimmedName, excludeId)) {
+        saveError.value = 'A God Roll with this name already exists'
         return
     }
 
     saveError.value = null
 
-    if (currentProfileId.value && !saveCopy) {
-        // Update existing
+    if (isUpdate) {
+        // UPDATE MODE: Profile loaded and not modified (or just name changed)
         const idx = savedProfiles.value.findIndex(p => p.id === currentProfileId.value)
         if (idx !== -1) {
             savedProfiles.value[idx].selection = { ...selection.value }
-            savedProfiles.value[idx].name = profileNameInput.value
+            savedProfiles.value[idx].name = trimmedName
         }
     } else {
-        // Create new
+        // CREATE MODE: Fresh state OR profile modified
         const newId = crypto.randomUUID()
         savedProfiles.value.push({
             id: newId,
-            name: profileNameInput.value,
+            name: trimmedName,
             selection: { ...selection.value }
         })
         currentProfileId.value = newId
     }
-    
+
     saveProfilesToStorage()
 }
 
@@ -405,6 +410,39 @@ const isProfileActive = (profile: SavedProfile): boolean => {
 
     return true
 }
+
+// Check if loaded profile has been modified
+const isProfileModified = computed(() => {
+    if (!currentProfileId.value) return false
+
+    const loadedProfile = savedProfiles.value.find(p => p.id === currentProfileId.value)
+    if (!loadedProfile) return false
+
+    // Reuse isProfileActive logic - if it's active, it's NOT modified
+    return !isProfileActive(loadedProfile)
+})
+
+// Check if a name is unique (excluding a specific profile ID)
+const isNameUnique = (name: string, excludeId?: string): boolean => {
+    return !savedProfiles.value.some(p =>
+        p.name.toLowerCase() === name.toLowerCase() &&
+        p.id !== excludeId
+    )
+}
+
+// Button state computed properties
+const buttonLabel = computed(() => {
+    if (!currentProfileId.value) return 'Save God Roll'
+    if (isProfileModified.value) return 'Save as New God Roll'
+    return 'Update God Roll'
+})
+
+const buttonClasses = computed(() => {
+    if (!currentProfileId.value || isProfileModified.value) {
+        return 'bg-green-700 hover:bg-green-600 text-white border border-green-600'
+    }
+    return 'bg-blue-600 hover:bg-blue-500 text-white'
+})
 
 // Load on mount/weapon change
 onMounted(loadProfilesFromStorage)

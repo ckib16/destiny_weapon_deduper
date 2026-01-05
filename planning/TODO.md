@@ -105,6 +105,28 @@ Consider these stats
     - [x] As I understand it now, we've removed the "Load Profile" buttonwhioch makes sense. To load the profile they simply click on the profile name in the "Saved God Rolls" section. To clear the profile, they click on the "Clear Perks" button. Is that correct?
     - [x] Update Profile UI: change "Save Copy" to "Save as New God Roll" and change color to green
 
+
+2026-01-04 - 2048L
+Thoughts on use cases
+
+When playing Destiny 2 I want to know:
+- how many copies I have?
+- do I have "coverage" of the perks I tend to want?
+- did I get a God Roll yet? 
+  - self-made God Roll (via in-app God Roll profile maker)
+  - curated God Roll (from DIM wishlists or streamer picks)?
+  - If so notify me
+
+When managing Inventory I want to know:
+- did I get a God Roll yet? (see above)
+- If not, what's the "best" roll I have so far
+  - for a selected God Roll, which current roll most closely matches it
+  - example: best roll has 4 of the 5 perks required on selected God Roll
+- Be able to dedupe all lesser rolls to clean up inventory
+  - Mark best roll as "locked"
+  - Mark others as "unlocked"
+
+
     
 
 

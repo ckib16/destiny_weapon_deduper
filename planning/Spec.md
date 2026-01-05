@@ -43,8 +43,6 @@ User: "I want to tidy up my inventory. I know what "god rolls" I want to keep, s
     - [ ] Make sure tooltip shows the icon from the Enhanced trait, not the Basic trait
 
 
-
-
 ## UI
 ### Weapons view (Inventory view)
 Show all weapons, with identical weapons grouped together
@@ -62,12 +60,12 @@ Workflow
 - User clicks a weapon in the Weapons view
 - Brought to new view showing detailed / punchcard UI
 
-#### Punchcard UI
+#### Overview tab ("Punchcard" UI)
 - Already implemented
 - Shows typical Destiny 2 "weapon perks grid" similar to DIM, Foundry.gg, Light.gg etc.
 - ![alt text](punchcard_ui.png)
 
-#### Coverage UI
+#### Perk Coverage tab
 Idea only
 - [ ] need new name for "Coverage"; idea is you want more granular view over what weapon instances are contributing to each Punchcard trait being highlighted / filled in / covered
 
@@ -88,7 +86,7 @@ Workflow
                 - User hovers over an individual trait in the Punchcard UI section, and can see which instances of the weapon contain the perk they are hovering over
                 - User hovers over an individual instance of the weapon in the Instances section, and can see which traits are contained in that instance in the Punchcard UI section
 
-#### "God Roll" UI
+#### "Set Your God Roll" tab
 Probably do this after the granular view of "Coverage" is implemented
 
 Workflow
@@ -115,7 +113,7 @@ Workflow
     - [ ] I need a crowd-sourced way for people to submit their God Rolls to the list for everyone to use, then I approve them and add them to the list for everyone to use
     - [ ] Possible way ahead: people can edit a group of God Rolls in app. Then build an "export" function that exports the God Rolls as a JSON file, and submit them as a "curated list" to me, then I approve them and add them to the list for everyone to use 
 
-##### Streamer Picks (Section in the God Roll view)
+##### Streamer Picks (Section in the God Roll tab)
 - [ ] Streamer Selections: ability to have curated list of God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
     - Idea if for an admin-only list of pre-made / curated God Rolls that can be selected / viewed / used on the God Roll view. Need some way for admin to add curated God Rolls to the list
 - Workflow Idea: 
