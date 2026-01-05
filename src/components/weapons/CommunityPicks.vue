@@ -27,23 +27,27 @@
     </button>
 
     <!-- Collapsible Content -->
-    <div v-show="isExpanded" class="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-      <!-- Loading State -->
-      <div v-if="loading" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
-        <span class="text-gray-400 text-sm">Loading community picks...</span>
-      </div>
+    <div v-show="isExpanded" class="animate-in fade-in slide-in-from-top-2 duration-200">
+      <!-- Admin Mode: Two Column Layout -->
+      <div :class="isAdminMode ? 'grid grid-cols-1 lg:grid-cols-3 gap-4' : ''">
+        <!-- Left Column: Picks List -->
+        <div :class="isAdminMode ? 'lg:col-span-2' : ''" class="space-y-3">
+          <!-- Loading State -->
+          <div v-if="loading" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
+            <span class="text-gray-400 text-sm">Loading community picks...</span>
+          </div>
 
-      <!-- Empty State (only show in admin mode) -->
-      <div v-else-if="picks.length === 0 && isAdminMode" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
-        <span class="text-gray-400 text-sm">No community picks for this weapon yet.</span>
-      </div>
+          <!-- Empty State (only show in admin mode) -->
+          <div v-else-if="picks.length === 0 && isAdminMode" class="p-4 bg-gray-800/50 rounded-lg border border-gray-700 text-center">
+            <span class="text-gray-400 text-sm">No community picks for this weapon yet.</span>
+          </div>
 
-      <!-- Pick Cards -->
-      <div
-        v-for="pick in picks"
-        :key="pick.id"
-        class="bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-3"
-      >
+          <!-- Pick Cards -->
+          <div
+            v-for="pick in picks"
+            :key="pick.id"
+            class="bg-gray-800 border border-gray-700 rounded-lg p-4 space-y-3"
+          >
         <!-- Header: Name + Tags + Source -->
         <div class="flex items-start justify-between gap-2">
           <div class="flex items-center gap-2 flex-wrap min-w-0">
@@ -111,14 +115,43 @@
         </div>
       </div>
 
-      <!-- Admin: Add New Button -->
-      <button
-        v-if="isAdminMode"
-        @click="showAddForm = true"
-        class="w-full p-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
-      >
-        + Add Community Pick
-      </button>
+          <!-- Admin: Add New Button -->
+          <button
+            v-if="isAdminMode"
+            @click="showAddForm = true"
+            class="w-full p-3 border-2 border-dashed border-gray-600 hover:border-gray-500 rounded-lg text-gray-400 hover:text-gray-300 transition-colors"
+          >
+            + Add Community Pick
+          </button>
+        </div>
+
+        <!-- Right Column: Admin Instructions (only in admin mode) -->
+        <div v-if="isAdminMode" class="space-y-3">
+          <div class="bg-amber-900/20 border border-amber-700/50 rounded-lg p-4">
+            <h5 class="font-bold text-sm text-amber-300 mb-3 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Admin Mode
+            </h5>
+            <div class="space-y-3 text-xs text-gray-300">
+              <p class="font-semibold text-amber-200">How to add a Community Pick:</p>
+              <ol class="list-decimal list-inside space-y-1.5 text-gray-400">
+                <li>Select perks in <span class="text-white">God Roll Creator</span> below</li>
+                <li>Click <span class="text-white">+ Add Community Pick</span></li>
+                <li>Fill form &amp; click <span class="text-white">Copy from God Roll Creator</span></li>
+                <li>Click <span class="text-white">Add Pick</span> (JSON copied to clipboard)</li>
+                <li>Paste into <code class="bg-gray-800 px-1 rounded">data/community-picks.json</code></li>
+                <li>Commit &amp; push to repo</li>
+              </ol>
+              <div class="mt-3 pt-3 border-t border-amber-700/30">
+                <p class="text-amber-400/80 text-[10px] uppercase tracking-wider font-bold">Warning</p>
+                <p class="text-gray-500 mt-1">Changes are temporary until committed. Refreshing the page will lose unsaved picks.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Admin: Add/Edit Form Modal -->
       <div

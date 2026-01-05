@@ -108,30 +108,30 @@ Workflow
     - Maximum traits per column should follow the Bungie API limit for Tier 5 weapons (see "Bungie Weapon Information" section above for limits)
 - God Roll profile should be saved to local storage
 - User should be able to Create, Edit, and Delete God Roll profiles
-- [ ] God Roll profile should have a text notes section at the bottom of the profile
-- [ ] Export curated God Rolls
-    - [ ] I need a crowd-sourced way for people to submit their God Rolls to the list for everyone to use, then I approve them and add them to the list for everyone to use
-    - [ ] Possible way ahead: people can edit a group of God Rolls in app. Then build an "export" function that exports the God Rolls as a JSON file, and submit them as a "curated list" to me, then I approve them and add them to the list for everyone to use 
+- [x] God Roll profile should have a text notes section at the bottom of the profile
 
-##### Streamer Picks (Section in the God Roll tab)
-- [ ] Streamer Selections: ability to have curated list of God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
+##### Community Picks (Section in the God Roll tab)
+- [ ] Community picks: ability to have curated list of God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
     - Idea if for an admin-only list of pre-made / curated God Rolls that can be selected / viewed / used on the God Roll view. Need some way for admin to add curated God Rolls to the list
 - Workflow Idea: 
-    - [ ] Add a new "Streamer Picks" button in the God Roll view
-    - [ ] Clicking "Streamer Picks" button opens a new "Streamer Picks" view with a list of curated, pre-filled God Rolls from streamers / internet (Aztecross, Mave, Coolgut / PVE & PVP)
-        - [ ] Streamer picks should include PVE/PVP, Streamer name, link to their web page or YouTube video timestamped clip of the God Roll
+    - [ ] Add a new "Community Picks" section
+        - [ ] section could either be a new sub-page view you go to via a new button in the God Roll view; OR as a collapsible section just above God Roll creator
+            - I'm leaning towards UI being a collapsble section just above God Roll creator
+            - You "unfurl" the "Community Picks" section, see if any pre-made community picks for the weapon interest you, hit "Save to my God Rolls" button to get it addded to "Saved God Rolls" list
+        - [ ] Clicking "Community Picks" button opens a new "Community Picks" view with a list of curated, pre-filled God Rolls from Community / internet (Aztecross, Mave, Coolgut / PVE & PVP)
+        - [ ] Community picks should include PVE/PVP, Streamer name, link to their web page or YouTube video timestamped clip of the God Roll
     - [ ] Clicking "Save this to my God Roll list" button saves the God Roll to the user's unique God Roll list and returns them to their God Roll view
-    - [ ] For me and other Admins, an "Edit Streamer Picks" button in the new "Streamer Picks" view allowing me to create, edit, and delete curated God Rolls in the same way as the "Edit God Roll" button in the God Roll view
-    - In a sense, the "Streamer Picks" section is just another "God Roll" view that only I control & curate, but that is published to everyone for their use
+    - [ ] For me and other Admins, an "Edit Community Picks" button in the new "Community Picks" view allowing me to create, edit, and delete curated God Rolls in the same way as the "Edit God Roll" button in the God Roll view
+    - In a sense, the "Community Picks" section is just another "God Roll" view that only I control & curate, but that is published to everyone for their use
 - Big news - this wishlist creation / distribution capability exists already in GUI form - 
     - Pre-built wishlists & wishlist creation tools are already available
-        - Can use these prebuilt wishlists as a starting point for the "Streamer Picks" section
+        - Can use these prebuilt wishlists as a starting point for the "Community Picks" section
         - Can then add my own curated wishlists to the list for everyone to use from (Aztecross, Mave, Coolgut / PVE & PVP)
     - Likely workflow:
-        - Existing / pre-builtwishlists: 
+        - Existing / pre-built wishlists: 
             - Get D3 app to import existing wishlists from GitHub
             - See instructions for AI to learn how wishlists are structured here - https://github.com/DestinyItemManager/DIM/wiki/Creating-Wish-Lists#constructing-wish-list-rolls-manually
-            - Show some pre-built wishlists from in our D3 app they can toggle on / off easily from top of the "Streamer Picks" section
+            - Show some pre-built wishlists from in our D3 app they can toggle on / off easily from top of the "Community Picks" section
             - Provide way to auto-update wishlists from GitHub
             - Show "Current as of" date for pre-made wishlists with date linking to GitHub commit
         - New wishlists (if user REALLY wants to make wishlist instead of using our own in-app "Save God Roll" feature): 
@@ -150,6 +150,30 @@ Workflow
                 - 11. once complete, click export wishlist and choose DIM as the type. that will save a file.
                 - 12. go to DIM > settings > wishlist and click load wish list rolls
                 - 13. select your file.
+        - Export wishlists in different formats
+            - Not sure how hard the fomrats will be
+            - JSON first; then maybe DIM, CSV, XLSX (same as littlelight - https://wishlists.littlelight.club/#/)
+
+##### Community Picks - Implementation (January 2025)
+- [x] Collapsible section above God Roll Creator
+- [x] Pick cards show: name, PVE/PVP tag, streamer name, source link
+- [x] "Save to my God Rolls" button copies pick to user's saved profiles
+- [x] Admin mode via `?admin=true` URL param
+- [x] Data stored in `data/community-picks.json`, fetched from GitHub
+
+**Admin Workflow for Creating Community Picks:**
+1. Navigate to weapon detail → "Set your God Roll" tab
+2. Add `?admin=true` to URL (e.g., `/weapons/123456?admin=true`)
+3. Community Picks section appears with "+ Add Community Pick" button
+4. In God Roll Creator below, select perks for your recommended roll
+5. Click "+ Add Community Pick" button
+6. Fill form: name, category (PVE/PVP), streamer name, source URL
+7. Click "Copy from God Roll Creator" to capture your perk selection
+8. Click "Add Pick" - JSON is auto-copied to clipboard
+9. Paste into `data/community-picks.json` and commit to repo
+10. After deploy, picks appear for all users
+
+**Note:** Admin UI changes are temporary until committed. Refreshing loses unsaved work.
 
 ### Future goals
 
