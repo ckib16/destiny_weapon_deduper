@@ -22,8 +22,9 @@
               <li>Select perks in God Roll Creator below</li>
               <li>Click + Add Community Pick</li>
               <li>Fill form & click Copy from God Roll Creator</li>
-              <li>Click Add Pick (JSON copied)</li>
-              <li>Paste into data/community-picks.json</li>
+              <li>Click Add Pick → <span class="text-amber-300">ALL picks JSON copied</span></li>
+              <li>Open data/community-picks.json</li>
+              <li><span class="text-amber-300">Select All → Paste</span> (replace entire file)</li>
               <li>Commit & push to repo</li>
             </ol>
             <span class="block mt-2 text-[10px] text-amber-400">Changes are temporary until committed.</span>
