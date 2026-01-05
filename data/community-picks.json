@@ -1,14 +1,14 @@
 {
   "version": "1.0",
-  "lastUpdated": "2026-01-05T20:02:20.760Z",
+  "lastUpdated": "2026-01-05T20:21:40.126Z",
   "picks": [
     {
       "id": "e9a986c0-1136-4fdf-8f92-1257fb3821f4",
-      "name": "T2",
+      "name": "T2 - SZ",
       "weaponHash": 3615748501,
       "category": "PVE",
       "streamer": {
-        "name": ""
+        "name": "SZ"
       },
       "notes": "Test2",
       "selection": {
@@ -16,15 +16,15 @@
         "4196967425": "AND"
       },
       "createdAt": "2026-01-05T19:58:17.668Z",
-      "updatedAt": "2026-01-05T19:58:17.668Z"
+      "updatedAt": "2026-01-05T20:20:02.545Z"
     },
     {
       "id": "b5d84b27-3058-4665-9e24-73f93e78c584",
-      "name": "T3",
+      "name": "T3 - SZ",
       "weaponHash": 3615748501,
       "category": "PVP",
       "streamer": {
-        "name": ""
+        "name": "SZ"
       },
       "notes": "Test3",
       "selection": {
@@ -33,7 +33,7 @@
         "4196967425": "AND"
       },
       "createdAt": "2026-01-05T20:02:20.759Z",
-      "updatedAt": "2026-01-05T20:02:20.759Z"
+      "updatedAt": "2026-01-05T20:20:14.199Z"
     }
   ]
 }
