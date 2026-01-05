@@ -1,7 +1,14 @@
 <template>
   <div class="space-y-6 text-gray-200">
+    <!-- Community Picks Section -->
+    <CommunityPicks
+      :weapon="weapon"
+      :currentSelection="selection"
+      @save-to-my-rolls="handleSaveCommunityPick"
+    />
+
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-      
+
       <!-- Left: Selection Grid -->
       <div class="xl:col-span-2 space-y-4">
         <!-- Header -->
@@ -233,6 +240,8 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import type { DedupedWeapon } from '@/models/deduped-weapon'
 import type { WeaponInstance } from '@/models/weapon-instance'
+import type { CommunityPick } from '@/models/community-pick'
+import CommunityPicks from './CommunityPicks.vue'
 
 const props = defineProps<{
   weapon: DedupedWeapon
@@ -491,6 +500,36 @@ watch(() => props.weapon.weaponHash, () => {
     clearSelection()
 })
 
+// --- Community Picks Integration ---
+const handleSaveCommunityPick = (pick: CommunityPick) => {
+    // Check for existing profile with same name
+    const existingIdx = savedProfiles.value.findIndex(
+        p => p.name.toLowerCase() === pick.name.toLowerCase()
+    )
+
+    const newProfile: SavedProfile = {
+        id: existingIdx >= 0 ? savedProfiles.value[existingIdx].id : crypto.randomUUID(),
+        name: pick.name,
+        notes: pick.notes,
+        selection: { ...pick.selection }
+    }
+
+    if (existingIdx >= 0) {
+        // Update existing
+        savedProfiles.value[existingIdx] = newProfile
+    } else {
+        // Add new
+        savedProfiles.value.push(newProfile)
+    }
+
+    saveProfilesToStorage()
+
+    // Load into current selection so user sees the pick applied
+    selection.value = { ...pick.selection }
+    currentProfileId.value = newProfile.id
+    profileNameInput.value = newProfile.name
+    profileNotesInput.value = newProfile.notes || ''
+}
 
 // --- Helpers ---
 
