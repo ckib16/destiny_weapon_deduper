@@ -22,9 +22,9 @@
               <li>Select perks in God Roll Creator below</li>
               <li>Click + Add Community Pick</li>
               <li>Fill form & click Copy from God Roll Creator</li>
-              <li>Click Add Pick → <span class="text-amber-300">ALL picks JSON copied</span></li>
+              <li>Click Add Pick → <span class="text-amber-300">JSON from ALL saved Community Picks are copied to clipboard</span></li>
               <li>Open data/community-picks.json</li>
-              <li><span class="text-amber-300">Select All → Paste</span> (replace entire file)</li>
+              <li><span class="text-amber-300">Select All → Paste</span> (replace entire file with clipboard contents)</li>
               <li>Commit & push to repo</li>
             </ol>
             <span class="block mt-2 text-[10px] text-amber-400">Changes are temporary until committed.</span>
@@ -154,9 +154,9 @@
             {{ editingPick ? 'Edit' : 'Add' }} Community Pick
           </h3>
 
-          <!-- Name -->
+          <!-- Community Pick Name -->
           <div>
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Name</label>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Community Pick Name</label>
             <input
               v-model="formData.name"
               type="text"
@@ -178,9 +178,9 @@
             </select>
           </div>
 
-          <!-- Streamer -->
+          <!-- Contributor / Streamer Name -->
           <div>
-            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Streamer Name</label>
+            <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Contributor / Streamer Name</label>
             <input
               v-model="formData.streamerName"
               type="text"
@@ -384,8 +384,16 @@ const getPerkPreviewClass = (type: SelectionType) => {
 // --- Admin functions ---
 const editPick = (pick: CommunityPick) => {
   editingPick.value = pick
+
+  // Parse name: if it ends with " - {streamerName}", extract the roll name part
+  let rollName = pick.name
+  const suffix = ` - ${pick.streamer.name}`
+  if (pick.streamer.name && pick.name.endsWith(suffix)) {
+    rollName = pick.name.slice(0, -suffix.length)
+  }
+
   formData.value = {
-    name: pick.name,
+    name: rollName,
     category: pick.category,
     streamerName: pick.streamer.name,
     sourceUrl: pick.sourceUrl || '',
@@ -430,12 +438,25 @@ const copyCurrentSelection = () => {
 }
 
 const saveForm = () => {
+  // Validate required fields
+  if (!formData.value.name.trim()) {
+    alert('Please enter a name for this pick')
+    return
+  }
+  if (!formData.value.streamerName.trim()) {
+    alert('Please enter a contributor/streamer name')
+    return
+  }
+
+  // Combine name: "Roll Name - Contributor"
+  const fullName = `${formData.value.name.trim()} - ${formData.value.streamerName.trim()}`
+
   const newPick: CommunityPick = {
     id: editingPick.value?.id || crypto.randomUUID(),
-    name: formData.value.name,
+    name: fullName,
     weaponHash: props.weapon.weaponHash,
     category: formData.value.category,
-    streamer: { name: formData.value.streamerName },
+    streamer: { name: formData.value.streamerName.trim() },
     sourceUrl: formData.value.sourceUrl || undefined,
     notes: formData.value.notes || undefined,
     selection: { ...formData.value.selection },
@@ -457,12 +478,16 @@ const saveForm = () => {
 }
 
 const exportJson = () => {
+  const fullName = formData.value.streamerName.trim()
+    ? `${formData.value.name.trim()} - ${formData.value.streamerName.trim()}`
+    : formData.value.name.trim()
+
   const pick: CommunityPick = {
     id: editingPick.value?.id || crypto.randomUUID(),
-    name: formData.value.name,
+    name: fullName,
     weaponHash: props.weapon.weaponHash,
     category: formData.value.category,
-    streamer: { name: formData.value.streamerName },
+    streamer: { name: formData.value.streamerName.trim() },
     sourceUrl: formData.value.sourceUrl || undefined,
     notes: formData.value.notes || undefined,
     selection: { ...formData.value.selection },
