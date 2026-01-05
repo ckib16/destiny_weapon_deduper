@@ -60,7 +60,8 @@
         <div
           v-for="pick in picks"
           :key="pick.id"
-          class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors relative"
+          class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors relative cursor-pointer"
+          @click="emit('loadPick', pick)"
         >
           <div class="flex justify-between items-start mb-2">
             <div class="min-w-0 flex-1">
@@ -117,13 +118,14 @@
           <!-- Add to God Rolls Button -->
           <button
             v-if="!isPickAlreadySaved(pick)"
-            @click="emit('saveToMyRolls', pick)"
+            @click.stop="emit('saveToMyRolls', pick)"
             class="w-full text-[10px] px-2 py-1.5 rounded bg-green-700 hover:bg-green-600 text-white border border-green-600 transition-colors"
           >
             Add to my God Rolls
           </button>
           <div
             v-else
+            @click.stop
             class="w-full text-[10px] px-2 py-1.5 rounded bg-gray-700 text-gray-400 border border-gray-600 text-center"
           >
             Already saved
@@ -304,6 +306,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   saveToMyRolls: [pick: CommunityPick]
+  loadPick: [pick: CommunityPick]
 }>()
 
 const route = useRoute()

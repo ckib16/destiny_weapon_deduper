@@ -6,6 +6,7 @@
       :currentSelection="selection"
       :savedProfileNames="savedProfileNamesSet"
       @save-to-my-rolls="handleSaveCommunityPick"
+      @load-pick="handleLoadCommunityPick"
     />
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -588,6 +589,25 @@ const handleSaveCommunityPick = (pick: CommunityPick) => {
     currentProfileId.value = newProfile.id
     profileNameInput.value = newProfile.name
     profileNotesInput.value = newProfile.notes || ''
+}
+
+// Load a community pick into the God Roll Creator (preview only, doesn't save)
+const handleLoadCommunityPick = (pick: CommunityPick) => {
+    // Check if this pick is already saved - if so, load that saved profile
+    const existingProfile = savedProfiles.value.find(
+        p => p.name.toLowerCase() === pick.name.toLowerCase()
+    )
+
+    if (existingProfile) {
+        // Load the saved profile (maintains locked state)
+        loadProfile(existingProfile)
+    } else {
+        // Just load the selection for preview (no profile association)
+        selection.value = { ...pick.selection }
+        currentProfileId.value = null
+        profileNameInput.value = ''
+        profileNotesInput.value = ''
+    }
 }
 
 // --- Helpers ---
