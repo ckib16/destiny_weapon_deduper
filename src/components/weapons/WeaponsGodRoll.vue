@@ -6,7 +6,7 @@
       <div class="xl:col-span-2 space-y-4">
         <!-- Header -->
         <div class="flex items-center justify-between">
-          <h4 class="font-bold text-lg">God Roll Selector</h4>
+          <h4 class="font-bold text-lg">God Roll Creator</h4>
           
           <div class="flex items-center gap-4">
              <!-- Legend -->
@@ -84,28 +84,28 @@
                  <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
                     {{ currentProfileId ? 'Update Profile' : 'Save As God Roll' }}
                  </label>
-                 <input 
+                 <input
                     v-model="profileNameInput"
-                    type="text" 
+                    type="text"
                     placeholder="e.g. PvP God Roll"
-                    class="w-full bg-gray-900 border border-gray-600 rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600"
+                    class="w-full bg-gray-900 border rounded px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-600"
+                    :class="saveError ? 'border-red-500' : 'border-gray-600'"
                     @keyup.enter="saveProfile(false)"
                  />
+                 <p v-if="saveError" class="text-xs text-red-400 mt-1">{{ saveError }}</p>
               </div>
               <div class="flex items-end gap-2 h-full pt-5">
-                 <button 
+                 <button
                     @click="saveProfile(false)"
                     class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded text-sm font-medium transition-colors"
-                    :disabled="!profileNameInput.trim()"
                  >
                     {{ currentProfileId ? 'Save Changes' : 'Save God Roll' }}
                  </button>
-                 
-                 <button 
+
+                 <button
                     v-if="currentProfileId"
                     @click="saveProfile(true)"
                     class="px-4 py-2 bg-green-700 hover:bg-green-600 text-white rounded text-sm font-medium transition-colors border border-green-600"
-                    :disabled="!profileNameInput.trim()"
                  >
                     Save as New God Roll
                  </button>
@@ -117,18 +117,17 @@
         <div v-if="savedProfiles.length > 0" class="space-y-3 pt-4 border-t border-gray-700/50">
            <h4 class="font-bold text-sm text-gray-400 uppercase tracking-wider">Saved God Rolls</h4>
            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div 
-                 v-for="profile in savedProfiles" 
+              <div
+                 v-for="profile in savedProfiles"
                  :key="profile.id"
                  class="group bg-gray-800 border border-gray-700 hover:border-gray-500 rounded-lg p-3 transition-colors cursor-pointer relative"
-                 :class="{ 'ring-2 ring-blue-500/50 border-blue-500/50 bg-blue-900/10': currentProfileId === profile.id }"
+                 :class="{ 'ring-2 ring-blue-500/50 border-blue-500/50 bg-blue-900/10': isProfileActive(profile) }"
                  @click="loadProfile(profile)"
               >
                  <div class="flex justify-between items-start">
                     <div class="min-w-0">
-                       <h5 class="font-bold text-sm text-gray-200 truncate flex items-center gap-2">
+                       <h5 class="font-bold text-sm text-gray-200 truncate">
                           {{ profile.name }}
-                          <span v-if="currentProfileId === profile.id" class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>
                        </h5>
                        <p class="text-[10px] text-gray-500 mt-1 truncate">
                           {{ Object.keys(profile.selection).length }} perks selected
@@ -323,6 +322,7 @@ interface SavedProfile {
 const savedProfiles = ref<SavedProfile[]>([])
 const currentProfileId = ref<string | null>(null)
 const profileNameInput = ref('')
+const saveError = ref<string | null>(null)
 
 const STORAGE_KEY = computed(() => `d3_godroll_${props.weapon.weaponHash}`)
 
@@ -340,7 +340,12 @@ const saveProfilesToStorage = () => {
 }
 
 const saveProfile = (saveCopy: boolean) => {
-    if (!profileNameInput.value) return 
+    if (!profileNameInput.value.trim()) {
+        saveError.value = 'Name your God Roll before saving'
+        return
+    }
+
+    saveError.value = null
 
     if (currentProfileId.value && !saveCopy) {
         // Update existing
@@ -375,6 +380,30 @@ const deleteProfile = (id: string) => {
     if (currentProfileId.value === id) {
         clearSelection()
     }
+}
+
+// Clear error when user types
+watch(profileNameInput, () => {
+    if (saveError.value) saveError.value = null
+})
+
+// Check if a profile's selection exactly matches the current selection
+const isProfileActive = (profile: SavedProfile): boolean => {
+    const currentKeys = Object.keys(selection.value)
+    const profileKeys = Object.keys(profile.selection)
+
+    // Different number of selections
+    if (currentKeys.length !== profileKeys.length) return false
+
+    // Check if all keys and values match
+    for (const key of currentKeys) {
+        const perkHash = Number(key)
+        if (selection.value[perkHash] !== profile.selection[perkHash]) {
+            return false
+        }
+    }
+
+    return true
 }
 
 // Load on mount/weapon change

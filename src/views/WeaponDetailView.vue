@@ -42,11 +42,7 @@
       </div>
 
       <!-- Tab Content -->
-      <div v-if="activeTab === 'overview'">
-        <WeaponCard :weapon="selectedWeapon" />
-      </div>
-      
-      <div v-else-if="activeTab === 'coverage'">
+      <div v-if="activeTab === 'coverage'">
         <WeaponsCoverage :weapon="selectedWeapon" />
       </div>
 
@@ -62,7 +58,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useWeaponsStore } from '@/stores/weapons'
 import { useAuthStore } from '@/stores/auth'
-import WeaponCard from '@/components/weapons/WeaponCard.vue'
 import WeaponsCoverage from '@/components/weapons/WeaponsCoverage.vue'
 import WeaponsGodRoll from '@/components/weapons/WeaponsGodRoll.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
@@ -83,12 +78,11 @@ const selectedWeapon = computed(() => {
 })
 
 // Tab State
-const activeTab = ref<'overview' | 'coverage' | 'godroll'>('overview')
+const activeTab = ref<'coverage' | 'godroll'>('coverage')
 
 const tabs = [
-  { id: 'overview', label: 'Overview' },
   { id: 'coverage', label: 'Perk Coverage' },
-  { id: 'godroll', label: 'God Roll' }
+  { id: 'godroll', label: 'Set your God Roll' }
 ] as const
 
 const loadWeapons = async () => {
