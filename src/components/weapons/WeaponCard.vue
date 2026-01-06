@@ -26,11 +26,11 @@
 
     <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
       <div class="flex items-center justify-between rounded-lg bg-gray-900/40 px-3 py-2">
-        <span class="text-gray-400">Possible</span>
+        <span class="text-gray-400">Perks Possible</span>
         <span class="font-semibold text-gray-200">{{ weapon.totalPerksPossible }}</span>
       </div>
       <div class="flex items-center justify-between rounded-lg bg-gray-900/40 px-3 py-2">
-        <span class="text-gray-400">Owned</span>
+        <span class="text-gray-400">Perks Owned</span>
         <span class="font-semibold text-green-300">{{ weapon.totalPerksOwned }}</span>
       </div>
     </div>
