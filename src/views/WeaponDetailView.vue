@@ -5,7 +5,7 @@
     :error="weaponsStore.error"
     back-label="Back to all weapons"
     loading-message="Loading your arsenal..."
-    @back="router.push('/weapons')"
+    @back="router.push('/')"
   />
 </template>
 

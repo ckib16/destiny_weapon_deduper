@@ -134,12 +134,13 @@ When managing Inventory I want to know:
     - Segmented bars visualizarion - only showing for Origin trait column
 
 2026-01-05 - 2220L
-- [ ] Trait tool tips / descriptions when hover over in Perk Matrix as well as Intrinsic Trait in "Notes" section ("Lightweight frame" etc.)
-- [ ] Search bar & filters: how hard to implement something like "Search or Filter by" bar in https://d2foundry.gg/
+- [x] Trait tool tips / descriptions when hover over in Perk Matrix as well as Intrinsic Trait in "Notes" section ("Lightweight frame" etc.)
+- [ ] Consider "Clarity" enhanced tooltips in future (gives percentages, etc)
+- [x] Search bar & filters: how hard to implement something like "Search or Filter by" bar in https://d2foundry.gg/
     - ![alt text](search.png)
-    - [ ] Filters: Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
-    - [ ] Cache past inputs for quicker re-entry like her "Recent Searches" section in image?
-
+    - [x] Cache past inputs for quicker re-entry like her "Recent Searches" section in image?
+    - Filters: Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
+      - Note: filters would be like 6-9 hours work per Claude. Don't need it. Simple sorting by most # of copies is most effective
 
 
 

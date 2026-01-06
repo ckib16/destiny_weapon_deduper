@@ -11,14 +11,14 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
-    },
-    {
-      path: '/weapons',
       name: 'weapons',
       component: WeaponsView,
       meta: { requiresAuth: true }
+    },
+    {
+      path: '/about',
+      name: 'about',
+      component: HomeView
     },
     {
       path: '/weapons/:weaponHash',
@@ -44,7 +44,7 @@ router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'home' })
+    next({ name: 'about' })
   } else {
     next()
   }

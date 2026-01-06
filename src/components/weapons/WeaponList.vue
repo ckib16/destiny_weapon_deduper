@@ -70,12 +70,6 @@
       </div>
     </div>
 
-    <!-- Weapon count -->
-    <div class="text-gray-400 text-sm">
-      Found {{ sortedWeapons.length }} unique weapons
-      <span v-if="searchQuery">(filtered from {{ props.weapons.length }} total)</span>
-    </div>
-
     <!-- Weapon grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
       <WeaponCompactCard

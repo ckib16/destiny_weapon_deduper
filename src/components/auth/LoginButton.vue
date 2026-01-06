@@ -13,7 +13,7 @@
         Welcome, {{ authStore.user?.displayName || 'Guardian' }}!
       </p>
       <RouterLink
-        to="/weapons"
+        to="/"
         class="px-8 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl inline-block"
       >
         View Your Weapons

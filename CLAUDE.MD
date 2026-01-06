@@ -88,6 +88,11 @@ src/
 - Single-button save with smart state detection
 - Click/Shift-click interaction for perk selection
 
+**UX Features:**
+- Perk tooltips (native `title` attribute) showing descriptions on hover
+- Recent searches dropdown with localStorage persistence
+- Sort toggle (Most Duplicates / A-Z) on weapons list
+
 ## Data Models
 
 ### Weapon Instance
@@ -121,22 +126,31 @@ Consolidated view showing all earned perk combinations across all instances of t
 - Shared components in `components/common/`
 - Layout components in `components/layout/`
 
-## Recent Work (Git History)
+## Routes
 
-Latest commits on `suspicious-rhodes` branch:
-- `0d06f3c` - Implement single-button save logic with smart state detection
-- `c8f444f` - Refactor tabs and improve god roll UX
-- `5b80b16` - Remove unused PerkColumn imports
-- `a60085d` - Update optional perk legend text
-- `e50a30b` - Swap click/shift-click interaction for god roll selection
+- `/` - Main weapons list (requires auth)
+- `/about` - Landing page with login
+- `/weapons/:weaponHash` - Weapon detail view (requires auth)
+- `/playground/:weaponHash?` - Demo/prototype view
+- `/callback` - OAuth callback handler
+
+Unauthenticated users are redirected to `/about`.
 
 ## Development Commands
 
 ```bash
-npm run dev      # Start development server
-npm run build    # Build for production (runs vue-tsc + vite build)
-npm run preview  # Preview production build
+npm run dev        # Start development server
+npm run build      # Build for production (runs vue-tsc + vite build)
+npm run preview    # Preview production build
+npm test           # Run test suite (vitest)
+npm run test:watch # Run tests in watch mode
 ```
+
+## Testing
+
+- **Framework**: Vitest
+- **Test files**: `src/services/*.test.ts`
+- **Coverage**: 83 tests across 3 service files (manifest-service, weapon-parser, deduplication)
 
 ## Important Notes for Claude
 
@@ -158,6 +172,7 @@ npm run preview  # Preview production build
 - Change the matrix visualization paradigm without discussion
 - Modify API integration without understanding Bungie API contracts
 - Add unnecessary dependencies
+- Commit and push without running `npm test` first and ensuring all tests pass
 
 ## Future Enhancements (Stretch Goals)
 

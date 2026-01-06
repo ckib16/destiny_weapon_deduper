@@ -32,7 +32,7 @@ onMounted(async () => {
     status.value = 'Authentication successful! Redirecting...'
 
     setTimeout(() => {
-      router.push('/weapons')
+      router.push('/')
     }, 1000)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Authentication failed'

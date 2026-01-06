@@ -7,11 +7,10 @@
 
       <nav class="flex items-center gap-6">
         <RouterLink
-          v-if="authStore.isAuthenticated"
-          to="/weapons"
+          to="/about"
           class="text-gray-300 hover:text-white transition"
         >
-          Weapons
+          About
         </RouterLink>
 
         <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
@@ -39,6 +38,6 @@ const router = useRouter()
 
 const logout = () => {
   authStore.clearAuth()
-  router.push('/')
+  router.push('/about')
 }
 </script>

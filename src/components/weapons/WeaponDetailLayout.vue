@@ -124,6 +124,6 @@ const activeTab = ref<'coverage' | 'godroll'>('coverage')
 
 const tabs = [
   { id: 'coverage', label: 'Perk Coverage' },
-  { id: 'godroll', label: 'Set your God Roll' }
+  { id: 'godroll', label: 'Set your God Rolls' }
 ] as const
 </script>
