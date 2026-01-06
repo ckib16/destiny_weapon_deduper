@@ -181,12 +181,13 @@ Workflow
     - Should show percentage chance of acquireing your selected god roll given a single Tier 5 weapon drop
     - Example: "you selected 2 perks for column 1 using "and" logic, 2 perks for column 2 using "or" logic, 2 perks for column 3 using "and" logic, 2 perks for column 4 using "or" logic, 2 perks for column 5 using "and" logic, 2 perks for origin traits using "or" logic. Given that you expect to drop at Tier 5, you have a 10% chance of getting this god roll."
     - Need vocabulary to differentiate between "and" and "or" logic. Goal is to show that you have better odds if you are less choosy with 2 perks using "or" logic rather than **requiring** 2 perks with "and" logic.
-- [ ] CapacitorJS or similar for web app → iOS app (also works for android) 
+
+- [ ] iOS app: CapacitorJS or similar for web app → iOS app (also works for android) 
     - [ ] Notifications when God Roll profile is reached
         - [ ] User can enable / disable notifications
         - [ ] User can set notification threshold (e.g. 50%, 75%, 100%)
 
 
-Fornt-end overhaul
+Front-end overhaul
 - let Claude use it's front-end skill and see what it looks like
-  - Curent pallete is kind of drab?
+  - Current pallete is kind of bland

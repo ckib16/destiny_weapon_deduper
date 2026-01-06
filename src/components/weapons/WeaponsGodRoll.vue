@@ -257,6 +257,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import type { DedupedWeapon } from '@/models/deduped-weapon'
 import type { WeaponInstance } from '@/models/weapon-instance'
 import type { CommunityPick } from '@/models/community-pick'
+import { manifestService } from '@/services/manifest-service'
 import CommunityPicks from './CommunityPicks.vue'
 
 const props = defineProps<{
@@ -624,6 +625,8 @@ const getPerksForInstanceInColumn = (instance: WeaponInstance, colIndex: number)
 const perkNameCache = new Map<number, string>()
 const getPerkName = (hash: number) => {
   if (perkNameCache.has(hash)) return perkNameCache.get(hash)
+
+  // Search in matrix first
   for (const col of props.weapon.perkMatrix) {
     const p = col.availablePerks.find(p => p.hash === hash)
     if (p) {
@@ -631,6 +634,14 @@ const getPerkName = (hash: number) => {
         return p.name
     }
   }
+
+  // Fallback to manifest lookup for perks not in matrix
+  const perkDef = manifestService.getInventoryItem(hash)
+  if (perkDef?.displayProperties?.name) {
+    perkNameCache.set(hash, perkDef.displayProperties.name)
+    return perkDef.displayProperties.name
+  }
+
   return 'Unknown'
 }
 

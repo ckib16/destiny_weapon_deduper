@@ -1,7 +1,22 @@
 <template>
   <div>
     <div class="flex items-center justify-between mb-6">
-      <h1 class="text-3xl font-bold">Weapon Details</h1>
+      <!-- Weapon Icon + Name (or fallback title) -->
+      <div class="flex items-center gap-4">
+        <template v-if="selectedWeapon">
+          <img
+            v-if="selectedWeapon.weaponIcon"
+            :src="`https://www.bungie.net${selectedWeapon.weaponIcon}`"
+            :alt="selectedWeapon.weaponName"
+            class="h-14 w-14 rounded"
+          />
+          <div>
+            <h1 class="text-2xl font-bold">{{ selectedWeapon.weaponName }}</h1>
+            <p class="text-xs text-gray-500">{{ selectedWeapon.instances.length }} copies</p>
+          </div>
+        </template>
+        <h1 v-else class="text-3xl font-bold">Weapon Details</h1>
+      </div>
       <RouterLink
         to="/weapons"
         class="text-sm text-blue-400 hover:text-blue-300"
