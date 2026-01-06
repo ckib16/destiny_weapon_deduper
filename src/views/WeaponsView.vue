@@ -36,13 +36,10 @@
             <p class="text-sm text-gray-400">Total Instances</p>
           </div>
           <div class="col-span-2 md:col-span-1">
-            <p class="text-3xl font-bold text-purple-400">{{ duplicateCount }}</p>
+            <p class="text-3xl font-bold text-orange-400">{{ duplicateCount }}</p>
             <p class="text-sm text-gray-400">Duplicates</p>
           </div>
         </div>
-        <p class="text-xs text-gray-500 mt-3 text-center">
-          Found {{ weaponsStore.weapons.length }} unique weapons (out of {{ weaponsStore.weaponInstances.length }} total)
-        </p>
       </div>
 
       <WeaponList :weapons="weaponsStore.weapons" />

@@ -216,6 +216,14 @@ export class WeaponParser {
     const weaponDef = manifestService.getInventoryItem(itemHash)
     return weaponDef?.itemTypeDisplayName || 'Weapon'
   }
+
+  /**
+   * Get weapon tier type (rarity): 6 = Exotic, 5 = Legendary
+   */
+  getWeaponTierType(itemHash: number): number {
+    const weaponDef = manifestService.getInventoryItem(itemHash)
+    return weaponDef?.inventory?.tierType || 0
+  }
 }
 
 export const weaponParser = new WeaponParser()

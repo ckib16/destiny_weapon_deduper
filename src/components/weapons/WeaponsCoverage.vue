@@ -89,7 +89,10 @@
                 ></div>
                 
                 <!-- Content -->
-                <div class="relative z-10 flex items-center h-full px-2 gap-1.5 overflow-hidden">
+                <div
+                  class="relative z-10 flex items-center h-full px-2 gap-1.5 overflow-hidden"
+                  :title="perk.description || perk.name"
+                >
                    <img
                     v-if="perk.icon"
                     :src="`https://www.bungie.net${perk.icon}`"
@@ -156,7 +159,8 @@
             <span
               v-for="perk in weapon.intrinsicPerks"
               :key="perk.hash"
-              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+              :title="perk.description || perk.name"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200 cursor-help"
             >
               <img
                 v-if="perk.icon"
@@ -175,7 +179,8 @@
             <span
               v-for="perk in weapon.masterworkPerks"
               :key="perk.hash"
-              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+              :title="perk.description || perk.name"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200 cursor-help"
             >
               <img
                 v-if="perk.icon"

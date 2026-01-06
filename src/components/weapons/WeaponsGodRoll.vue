@@ -72,7 +72,10 @@
                  <div v-if="perk.isOwned" class="absolute left-0 top-0 bottom-0 w-0.5 bg-green-500/30"></div>
 
                 <!-- Content -->
-                <div class="relative z-10 flex items-center h-full px-2 gap-1.5 overflow-hidden">
+                <div
+                  class="relative z-10 flex items-center h-full px-2 gap-1.5 overflow-hidden"
+                  :title="perk.description || perk.name"
+                >
                    <img
                     v-if="perk.icon"
                     :src="`https://www.bungie.net${perk.icon}`"

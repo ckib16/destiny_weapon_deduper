@@ -18,6 +18,9 @@ export interface DedupedWeapon {
   totalPerksOwned: number
   totalPerksPossible: number
   completionPercentage: number
+
+  // Rarity (6 = Exotic, 5 = Legendary)
+  tierType: number
 }
 
 export interface PerkColumn {

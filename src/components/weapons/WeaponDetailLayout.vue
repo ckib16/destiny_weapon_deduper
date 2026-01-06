@@ -13,7 +13,7 @@
           <div>
             <h1 class="text-2xl font-bold">{{ weapon.weaponName }}</h1>
             <p class="text-xs text-gray-500">
-              {{ weapon.instances.length }} copies<span v-if="subtitle"> {{ subtitle }}</span>
+              {{ weapon.instances.length }} {{ weapon.instances.length === 1 ? 'Copy' : 'Copies' }}<span v-if="subtitle"> {{ subtitle }}</span>
             </p>
           </div>
           <!-- Stats -->

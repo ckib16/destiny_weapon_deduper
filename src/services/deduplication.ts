@@ -560,6 +560,7 @@ export function buildDedupedWeapon(
     instances,
     totalPerksOwned,
     totalPerksPossible,
-    completionPercentage
+    completionPercentage,
+    tierType: weaponParser.getWeaponTierType(weaponHash)
   }
 }

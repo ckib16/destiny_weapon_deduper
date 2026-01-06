@@ -16,7 +16,7 @@
 
       <div class="text-right flex-shrink-0">
         <p class="text-lg font-semibold text-blue-300">{{ weapon.instances.length }}</p>
-        <p class="text-[10px] text-gray-500 uppercase">Copies</p>
+        <p class="text-[10px] text-gray-500 uppercase">{{ weapon.instances.length === 1 ? 'Copy' : 'Copies' }}</p>
       </div>
     </div>
 
@@ -44,7 +44,8 @@
             <span
               v-for="perk in weapon.intrinsicPerks"
               :key="perk.hash"
-              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+              :title="perk.description || perk.name"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200 cursor-help"
             >
               <img
                 v-if="perk.icon"
@@ -63,7 +64,8 @@
             <span
               v-for="perk in weapon.masterworkPerks"
               :key="perk.hash"
-              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200"
+              :title="perk.description || perk.name"
+              class="inline-flex items-center gap-2 rounded border border-gray-700 bg-gray-900/60 px-2 py-1 text-xs text-gray-200 cursor-help"
             >
               <img
                 v-if="perk.icon"
