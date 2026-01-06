@@ -142,11 +142,25 @@ When managing Inventory I want to know:
     - Filters: Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
       - Note: filters would be like 6-9 hours work per Claude. Don't need it. Simple sorting by most # of copies is most effective
 
+2026-01-06
+- [x] Use updated icons with season markers and tier stars
+- [x] Sort instances by tier on details page
+- [x] Tier filter for instances on detail page (so you can neck down and just show Tier 5s if desired)
+  - by default should be all tiers / instances shown, user can then declutter / deselect instances based on tier level using buttons for each tier 1-5 if desired
 
-
-
+- Export & import user-made god rolls
+  - People need to be able to save their hard work thru data resets etc.
     
+- Add localstorage explainer to users to understand data deletion
+ - Good question. Let me clarify: localStorage is NOT cleared by "Clear cache" - it's separate from the browser cache. To clear localStorage in Chrome:
+DevTools: F12 → Application tab → Storage → Local Storage → right-click → Clear
+Settings: Settings → Privacy → Clear browsing data → Advanced → check "Site data" (this clears cookies AND localStorage)
+Site-specific: Click the lock icon in URL bar → Site settings → Clear data
+So god rolls would persist through normal cache clearing, but would be lost if user clears "site data" or "cookies and other site data".
 
+- [ ] Google Gemini agent
+  - read Youtube video
+  - 
 
 
 

@@ -156,7 +156,7 @@
             @mouseleave="hoveredInstanceId = null"
           >
             <div class="flex items-center justify-between mb-2">
-              <span class="font-bold text-sm">Roll {{ index + 1 }}</span>
+              <span class="font-bold text-sm">Copy {{ index + 1 }}</span>
               <span :class="getTierClass(instance.gearTier)" class="text-xs">{{ formatTier(instance.gearTier) }}</span>
               <span class="text-[10px] text-gray-500 font-mono">{{ instance.itemInstanceId }}</span>
             </div>

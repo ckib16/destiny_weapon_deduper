@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import HomeView from '@/views/HomeView.vue'
+import AboutView from '@/views/AboutView.vue'
 import WeaponsView from '@/views/WeaponsView.vue'
 import CallbackView from '@/views/CallbackView.vue'
 import WeaponDetailView from '@/views/WeaponDetailView.vue'
 import PlaygroundView from '@/views/PlaygroundView.vue'
+import SettingsView from '@/views/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +19,7 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      component: HomeView
+      component: AboutView
     },
     {
       path: '/weapons/:weaponHash',
@@ -35,6 +36,11 @@ const router = createRouter({
       path: '/callback',
       name: 'callback',
       component: CallbackView
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView
     }
   ]
 })

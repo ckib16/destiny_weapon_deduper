@@ -10,7 +10,7 @@
         :key="instance.itemInstanceId"
         class="flex items-center justify-between"
       >
-        <span>Roll {{ idx + 1 }}</span>
+        <span>Copy {{ idx + 1 }}</span>
         <span :class="getTierClass(instance.gearTier)">{{ formatTier(instance.gearTier) }}</span>
         <span class="font-mono text-gray-600">{{ instance.itemInstanceId.slice(0, 12) }}...</span>
       </div>
