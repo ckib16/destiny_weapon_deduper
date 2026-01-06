@@ -109,11 +109,45 @@
 
       <!-- Right: Instances List -->
       <div class="space-y-4">
-        <h4 class="font-bold text-lg">Instances ({{ weapon.instances.length }})</h4>
-        
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <h4 class="font-bold text-lg">Instances ({{ filteredAndSortedInstances.length }})</h4>
+          <div class="flex items-center gap-2">
+            <!-- Sort toggle -->
+            <button
+              @click="cycleSortOrder"
+              class="px-2 py-1 text-xs font-medium rounded transition-colors"
+              :class="sortOrder !== 'none' ? 'bg-gray-600 text-white' : 'bg-gray-800 text-gray-400 hover:bg-gray-700'"
+              title="Sort by tier"
+            >
+              {{ sortOrder === 'desc' ? '↓' : sortOrder === 'asc' ? '↑' : '−' }} Tier
+            </button>
+            <!-- Tier filter buttons -->
+            <div class="flex gap-0.5 bg-gray-800 rounded p-0.5">
+              <button
+                v-for="tier in [5, 4, 3, 2, 1]"
+                :key="tier"
+                @click="toggleTier(tier)"
+                class="w-6 h-6 text-xs font-medium rounded transition-colors"
+                :class="enabledTiers.has(tier) ? 'bg-gray-600 text-white' : 'bg-gray-800 text-gray-600 hover:text-gray-400'"
+                :title="`Toggle Tier ${tier}`"
+              >
+                {{ tier }}
+              </button>
+              <button
+                @click="toggleTier(null)"
+                class="w-6 h-6 text-xs font-medium rounded transition-colors"
+                :class="enabledTiers.has(null) ? 'bg-gray-600 text-white' : 'bg-gray-800 text-gray-600 hover:text-gray-400'"
+                title="Toggle No Tier"
+              >
+                ?
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="space-y-2">
-          <div 
-            v-for="(instance, index) in weapon.instances" 
+          <div
+            v-for="(instance, index) in filteredAndSortedInstances" 
             :key="instance.itemInstanceId"
             class="p-3 rounded-lg border transition-all duration-200 cursor-pointer"
             :class="getInstanceClasses(instance.itemInstanceId)"
@@ -214,7 +248,28 @@ const visualMode = ref<'simple' | 'detailed'>('simple')
 const hoveredPerkHash = ref<number | null>(null)
 const hoveredInstanceId = ref<string | null>(null)
 
+// Instance sorting and filtering
+const sortOrder = ref<'desc' | 'asc' | 'none'>('desc')
+const enabledTiers = ref<Set<number | null>>(new Set([1, 2, 3, 4, 5, null]))
+
 const matrixColumns = computed(() => props.weapon.perkMatrix)
+
+// Filtered and sorted instances
+const filteredAndSortedInstances = computed(() => {
+  let instances = props.weapon.instances.filter(i =>
+    enabledTiers.value.has(i.gearTier ?? null)
+  )
+
+  if (sortOrder.value !== 'none') {
+    instances = [...instances].sort((a, b) => {
+      const tierA = a.gearTier ?? 0
+      const tierB = b.gearTier ?? 0
+      return sortOrder.value === 'desc' ? tierB - tierA : tierA - tierB
+    })
+  }
+
+  return instances
+})
 
 // Build a map from any perk hash to all its variants (for hover matching)
 const perkVariantsMap = computed(() => {
@@ -426,6 +481,21 @@ function getTierClass(tier: number | null | undefined): string {
     return 'text-gray-600'
   }
   return 'text-gray-400'
+}
+
+// Sort and filter helpers
+function cycleSortOrder() {
+  const order: Record<string, 'desc' | 'asc' | 'none'> = { desc: 'asc', asc: 'none', none: 'desc' }
+  sortOrder.value = order[sortOrder.value]
+}
+
+function toggleTier(tier: number | null) {
+  if (enabledTiers.value.has(tier)) {
+    enabledTiers.value.delete(tier)
+  } else {
+    enabledTiers.value.add(tier)
+  }
+  enabledTiers.value = new Set(enabledTiers.value) // trigger reactivity
 }
 
 </script>
