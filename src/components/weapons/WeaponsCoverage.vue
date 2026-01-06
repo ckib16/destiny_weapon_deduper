@@ -8,18 +8,25 @@
         </p>
       </div>
 
-      <div class="flex items-center gap-4">
-        <label class="flex items-center gap-2 cursor-pointer">
-          <span class="text-sm font-medium">Visualization Mode:</span>
-          <select
-            v-model="visualMode"
-            class="bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            <option value="overview">Overview</option>
-            <option value="simple">Simple Highlight</option>
-            <option value="segmented">Segmented Bars</option>
-          </select>
-        </label>
+      <div class="flex items-center gap-1 bg-gray-700 rounded-lg p-1">
+        <button
+          @click="visualMode = 'overview'"
+          class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+          :class="visualMode === 'overview'
+            ? 'bg-green-600 text-white'
+            : 'text-gray-400 hover:text-white hover:bg-gray-600'"
+        >
+          Overview
+        </button>
+        <button
+          @click="visualMode = 'segmented'"
+          class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
+          :class="visualMode === 'segmented'
+            ? 'bg-purple-600 text-white'
+            : 'text-gray-400 hover:text-white hover:bg-gray-600'"
+        >
+          Segmented
+        </button>
       </div>
     </div>
 
@@ -63,12 +70,6 @@
                 @mouseenter="hoveredPerkHash = perk.hash"
                 @mouseleave="hoveredPerkHash = null"
               >
-                <!-- Simple Highlight Background -->
-                <div 
-                  v-if="visualMode === 'simple' && isPerkHighlighted(perk.hash)"
-                  class="absolute inset-0 bg-blue-500/20"
-                ></div>
-
                 <!-- Segmented Bars Background -->
                 <div v-if="visualMode === 'segmented'" class="absolute inset-0 flex h-full w-full opacity-30">
                   <div 
@@ -201,7 +202,7 @@ const props = defineProps<{
   weapon: DedupedWeapon
 }>()
 
-const visualMode = ref<'overview' | 'simple' | 'segmented'>('overview')
+const visualMode = ref<'overview' | 'segmented'>('overview')
 const hoveredPerkHash = ref<number | null>(null)
 const hoveredInstanceId = ref<string | null>(null)
 
@@ -335,14 +336,6 @@ const getPerkClasses = (perk: Perk) => {
     return 'bg-gray-800'
   }
 
-  // Simple highlight mode
-  if (visualMode.value === 'simple') {
-    if (hoveredPerkHash.value === perk.hash) return 'bg-blue-600/30'
-    if (isPerkHighlighted(perk.hash)) return 'bg-blue-600/10'
-    if (perk.isOwned) return 'bg-gray-700'
-    return 'bg-gray-800'
-  }
-
   // Segmented mode - ownership shown via colored bars
   if (perk.isOwned) return 'bg-gray-700'
   return 'bg-gray-800'
@@ -365,23 +358,6 @@ const getInstanceClasses = (instId: string) => {
     // Highlight if hovered perk is on this instance
     if (hoveredPerkHash.value) {
       if (instanceHasPerk(instId, hoveredPerkHash.value)) return 'bg-green-900/50 border-green-500/50'
-      return 'opacity-50'
-    }
-
-    if (hoveredInstanceId.value && hoveredInstanceId.value !== instId) {
-      return 'opacity-50'
-    }
-
-    return base
-  }
-
-  // Simple highlight mode - blue highlights
-  if (visualMode.value === 'simple') {
-    if (hoveredInstanceId.value === instId) return 'bg-blue-900 border-blue-500 ring-1 ring-blue-500'
-
-    // Highlight if hovered perk is on this instance
-    if (hoveredPerkHash.value) {
-      if (instanceHasPerk(instId, hoveredPerkHash.value)) return 'bg-blue-900/50 border-blue-500/50'
       return 'opacity-50'
     }
 
