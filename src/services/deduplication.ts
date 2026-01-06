@@ -64,11 +64,11 @@ function getSocketTypeName(socketTypeHash: number, fallback: string): string {
   return socketTypeDef?.displayProperties?.name || fallback
 }
 
-function normalizePerkName(name: string): string {
+export function normalizePerkName(name: string): string {
   return name.replace(/^enhanced\s+/i, '').trim().toLowerCase()
 }
 
-function isEnhancedPerkName(name: string): boolean {
+export function isEnhancedPerkName(name: string): boolean {
   return /^enhanced\s+/i.test(name)
 }
 
@@ -113,7 +113,7 @@ function isMasterworkDisplayCandidate(hash: number): boolean {
   return true
 }
 
-function isTrackerColumn(
+export function isTrackerColumn(
   socketTypeName: string,
   categoryName: string | null,
   perkNames: string[],
@@ -136,7 +136,7 @@ function isTrackerColumn(
   })
 }
 
-function getColumnKind(
+export function getColumnKind(
   socketTypeName: string,
   categoryName: string | null,
   perkTypeNames: string[]
@@ -525,7 +525,7 @@ function buildPerkMatrix(
   return { matrix: perkColumns, intrinsicPerks, masterworkPerks }
 }
 
-function countOwnedPerks(columns: PerkColumn[]): number {
+export function countOwnedPerks(columns: PerkColumn[]): number {
   let count = 0
   for (const column of columns) {
     for (const perk of column.availablePerks) {
@@ -535,7 +535,7 @@ function countOwnedPerks(columns: PerkColumn[]): number {
   return count
 }
 
-function countPossiblePerks(columns: PerkColumn[]): number {
+export function countPossiblePerks(columns: PerkColumn[]): number {
   return columns.reduce((sum, column) => sum + column.availablePerks.length, 0)
 }
 
