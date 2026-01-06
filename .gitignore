@@ -30,5 +30,6 @@ dist-ssr
 # Python scripts
 scripts/youtube-agent/.env
 scripts/youtube-agent/*.md
+scripts/youtube-agent/venv/
 __pycache__/
 *.pyc
