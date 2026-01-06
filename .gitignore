@@ -26,3 +26,9 @@ dist-ssr
 # Environment variables
 .env.local
 .env.*.local
+
+# Python scripts
+scripts/youtube-agent/.env
+scripts/youtube-agent/*.md
+__pycache__/
+*.pyc
