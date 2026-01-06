@@ -18,18 +18,7 @@
       </div>
       <div class="text-right flex-shrink-0">
         <p class="text-lg font-semibold text-blue-300">{{ weapon.instances.length }}</p>
-        <p class="text-[10px] text-gray-500 uppercase">Copies</p>
-      </div>
-    </div>
-
-    <div class="mt-4 grid grid-cols-2 gap-3 text-sm">
-      <div class="flex items-center justify-between rounded-lg bg-gray-900/40 px-3 py-2">
-        <span class="text-gray-400">Perks Possible</span>
-        <span class="font-semibold text-gray-200">{{ weapon.totalPerksPossible }}</span>
-      </div>
-      <div class="flex items-center justify-between rounded-lg bg-gray-900/40 px-3 py-2">
-        <span class="text-gray-400">Perks Owned</span>
-        <span class="font-semibold text-green-300">{{ weapon.totalPerksOwned }}</span>
+        <p class="text-[10px] text-gray-500 uppercase">{{ weapon.instances.length === 1 ? 'Copy' : 'Copies' }}</p>
       </div>
     </div>
   </RouterLink>
