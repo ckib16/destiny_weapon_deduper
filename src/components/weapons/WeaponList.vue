@@ -47,6 +47,20 @@
         </div>
       </div>
 
+      <!-- Duplicates only toggle -->
+      <label class="flex items-center gap-2 text-sm text-gray-300 cursor-pointer select-none">
+        <div class="relative">
+          <input
+            type="checkbox"
+            v-model="showDuplicatesOnly"
+            class="sr-only peer"
+          />
+          <div class="w-9 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 transition-colors"></div>
+          <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4"></div>
+        </div>
+        <span>Duplicates only</span>
+      </label>
+
       <!-- Sort toggle -->
       <div class="flex items-center gap-1 bg-gray-700 rounded-lg p-1">
         <button
@@ -82,6 +96,9 @@
     <!-- Empty state -->
     <div v-if="sortedWeapons.length === 0" class="text-center py-12 text-gray-500">
       <p v-if="searchQuery">No weapons found matching "{{ searchQuery }}"</p>
+      <p v-else-if="showDuplicatesOnly && props.weapons.length > 0">
+        No weapons with duplicates. Toggle off to see all {{ props.weapons.length }} weapons.
+      </p>
       <p v-else>No weapons to display</p>
     </div>
   </div>
@@ -100,6 +117,7 @@ const searchInput = ref<HTMLInputElement | null>(null)
 const searchQuery = ref('')
 const sortBy = ref<'name' | 'copies'>('copies')
 const showRecentSearches = ref(false)
+const showDuplicatesOnly = ref(true)
 
 // --- Recent Searches ---
 const RECENT_SEARCHES_KEY = 'd3_recent_searches'
@@ -162,11 +180,16 @@ const hideRecentSearchesDelayed = () => {
 }
 
 // --- Filtering & Sorting ---
+const duplicateFilteredWeapons = computed(() => {
+  if (!showDuplicatesOnly.value) return props.weapons
+  return props.weapons.filter(w => w.instances.length >= 2)
+})
+
 const filteredWeapons = computed(() => {
-  if (!searchQuery.value) return props.weapons
+  if (!searchQuery.value) return duplicateFilteredWeapons.value
 
   const query = searchQuery.value.toLowerCase()
-  return props.weapons.filter(weapon =>
+  return duplicateFilteredWeapons.value.filter(weapon =>
     weapon.weaponName.toLowerCase().includes(query)
   )
 })
