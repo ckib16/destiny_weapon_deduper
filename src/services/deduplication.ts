@@ -268,7 +268,7 @@ function buildPerkColumn(
     let isOwned = variants.some((variant) => ownedPerks.has(variant.hash))
 
     // Fix for Origin Traits that use a fixed reusablePlugSet (like Aisha's Care)
-    // If the socket has a reusablePlugSet (fixed options) and is NOT randomized, 
+    // If the socket has a reusablePlugSet (fixed options) and is NOT randomized,
     // we assume all options in that set are available/owned.
     if (!isOwned && fallbackName === 'Origin Trait') {
       const hasFixedPlugs = !!socketEntry.reusablePlugSetHash
@@ -278,12 +278,16 @@ function buildPerkColumn(
       }
     }
 
+    // Collect all variant hashes (enhanced + non-enhanced) for hover matching
+    const variantHashes = variants.map((v) => v.hash)
+
     availablePerks.push({
       hash: chosen.hash,
       name: perkDef?.displayProperties?.name || `Unknown Perk (${chosen.hash})`,
       description: perkDef?.displayProperties?.description || '',
       icon: perkDef?.displayProperties?.icon || '',
-      isOwned
+      isOwned,
+      variantHashes
     })
   }
 

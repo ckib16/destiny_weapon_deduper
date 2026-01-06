@@ -4,4 +4,6 @@ export interface Perk {
   description: string
   icon: string
   isOwned: boolean
+  /** All variant hashes (e.g., enhanced + non-enhanced) that map to this perk */
+  variantHashes?: number[]
 }

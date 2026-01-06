@@ -123,12 +123,12 @@
             <!-- Full Perk Matrix Tags for Instance -->
             <div class="flex flex-wrap gap-1 min-w-0">
                <template v-for="col in matrixColumns" :key="col.columnIndex">
-                  <span 
-                    v-for="perkHash in getPerksForInstanceInColumn(instance, col.columnIndex)" 
+                  <span
+                    v-for="perkHash in getPerksForInstanceInColumn(instance, col.columnIndex)"
                     :key="perkHash"
                     class="text-[9px] px-1 py-0.5 bg-black/20 rounded text-gray-400 truncate text-center"
-                    :class="{ 
-                      'text-white bg-white/20 font-bold ring-1 ring-white/30': hoveredPerkHash && hoveredPerkHash === perkHash,
+                    :class="{
+                      'text-white bg-white/20 font-bold ring-1 ring-white/30': hoveredPerkHash && isPerkVariantMatch(hoveredPerkHash, perkHash),
                       'text-gray-300': !hoveredPerkHash
                     }"
                     :title="getPerkName(perkHash)"
@@ -207,6 +207,23 @@ const hoveredInstanceId = ref<string | null>(null)
 
 const matrixColumns = computed(() => props.weapon.perkMatrix)
 
+// Build a map from any perk hash to all its variants (for hover matching)
+const perkVariantsMap = computed(() => {
+  const map = new Map<number, number[]>()
+  for (const col of props.weapon.perkMatrix) {
+    for (const perk of col.availablePerks) {
+      const variants = perk.variantHashes || [perk.hash]
+      // Map each variant to all variants (including itself)
+      for (const variantHash of variants) {
+        map.set(variantHash, variants)
+      }
+      // Also map the primary hash
+      map.set(perk.hash, variants)
+    }
+  }
+  return map
+})
+
 // --- Color Palette ---
 const PALETTE = [
   '#EF4444', '#F97316', '#F59E0B', '#10B981', '#06B6D4', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#F43F5E',
@@ -220,17 +237,29 @@ const getInstanceColor = (instId: string) => {
 
 // --- Logic Helpers ---
 
+// Check if two perk hashes are variants of each other (e.g., enhanced vs non-enhanced)
+const isPerkVariantMatch = (hash1: number, hash2: number): boolean => {
+  if (hash1 === hash2) return true
+  const variants = perkVariantsMap.value.get(hash1)
+  return variants ? variants.includes(hash2) : false
+}
+
 // Check if an instance has a specific perk (by hash) in a specific column index
+// Also checks all variant hashes (e.g., enhanced + non-enhanced versions)
 const doesInstanceHavePerk = (instId: string, perkHash: number, colIndex: number): boolean => {
   const instance = props.weapon.instances.find(i => i.itemInstanceId === instId)
   if (!instance) return false
 
-  // Check active plug
-  if (instance.sockets.sockets[colIndex]?.plugHash === perkHash) return true
-  
-  // Check reusable plugs (selectable options)
+  // Get all variant hashes for this perk (enhanced + non-enhanced)
+  const variants = perkVariantsMap.value.get(perkHash) || [perkHash]
+
+  // Check active plug against all variants
+  const activePlugHash = instance.sockets.sockets[colIndex]?.plugHash
+  if (activePlugHash && variants.includes(activePlugHash)) return true
+
+  // Check reusable plugs (selectable options) against all variants
   const reusables = instance.socketPlugsByIndex?.[colIndex]
-  if (reusables && reusables.includes(perkHash)) return true
+  if (reusables && reusables.some(r => variants.includes(r))) return true
 
   return false
 }
@@ -319,52 +348,62 @@ const getPerkClasses = (perk: Perk) => {
   return 'bg-gray-800'
 }
 
+const instanceHasPerk = (instId: string, perkHash: number): boolean => {
+  for (const col of matrixColumns.value) {
+    if (doesInstanceHavePerk(instId, perkHash, col.columnIndex)) return true
+  }
+  return false
+}
+
 const getInstanceClasses = (instId: string) => {
   const base = 'bg-gray-800 border-gray-700'
-  
-  if (visualMode.value === 'simple') {
-    if (hoveredInstanceId.value === instId) return 'bg-blue-900 border-blue-500 ring-1 ring-blue-500'
-    
+
+  // Overview mode - green highlights
+  if (visualMode.value === 'overview') {
+    if (hoveredInstanceId.value === instId) return 'bg-green-900 border-green-500 ring-1 ring-green-500'
+
     // Highlight if hovered perk is on this instance
     if (hoveredPerkHash.value) {
-       let hasPerk = false
-       for (const col of matrixColumns.value) {
-          if (doesInstanceHavePerk(instId, hoveredPerkHash.value, col.columnIndex)) {
-            hasPerk = true
-            break
-          }
-       }
-       if (hasPerk) return 'bg-blue-900/50 border-blue-500/50'
-       // Dim others
-       return 'opacity-50'
+      if (instanceHasPerk(instId, hoveredPerkHash.value)) return 'bg-green-900/50 border-green-500/50'
+      return 'opacity-50'
     }
 
     if (hoveredInstanceId.value && hoveredInstanceId.value !== instId) {
-       return 'opacity-50'
+      return 'opacity-50'
     }
 
     return base
   }
-  
+
+  // Simple highlight mode - blue highlights
+  if (visualMode.value === 'simple') {
+    if (hoveredInstanceId.value === instId) return 'bg-blue-900 border-blue-500 ring-1 ring-blue-500'
+
+    // Highlight if hovered perk is on this instance
+    if (hoveredPerkHash.value) {
+      if (instanceHasPerk(instId, hoveredPerkHash.value)) return 'bg-blue-900/50 border-blue-500/50'
+      return 'opacity-50'
+    }
+
+    if (hoveredInstanceId.value && hoveredInstanceId.value !== instId) {
+      return 'opacity-50'
+    }
+
+    return base
+  }
+
   // Segmented mode
   if (hoveredInstanceId.value === instId) {
     return 'ring-2 ring-white border-transparent'
   }
-  
+
   if (hoveredPerkHash.value) {
-      let hasPerk = false
-       for (const col of matrixColumns.value) {
-          if (doesInstanceHavePerk(instId, hoveredPerkHash.value, col.columnIndex)) {
-            hasPerk = true
-            break
-          }
-       }
-     if (hasPerk) return 'brightness-110 ring-1 ring-white/50'
-     return 'opacity-40 grayscale-[0.5]'
+    if (instanceHasPerk(instId, hoveredPerkHash.value)) return 'brightness-110 ring-1 ring-white/50'
+    return 'opacity-40 grayscale-[0.5]'
   }
 
   if (hoveredInstanceId.value && hoveredInstanceId.value !== instId) {
-       return 'opacity-40 grayscale-[0.5]'
+    return 'opacity-40 grayscale-[0.5]'
   }
 
   return base
