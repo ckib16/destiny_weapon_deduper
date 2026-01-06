@@ -10,22 +10,24 @@
 
       <div class="flex items-center gap-1 bg-gray-700 rounded-lg p-1">
         <button
-          @click="visualMode = 'overview'"
+          @click="visualMode = 'simple'"
           class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
-          :class="visualMode === 'overview'
+          :class="visualMode === 'simple'
             ? 'bg-green-600 text-white'
             : 'text-gray-400 hover:text-white hover:bg-gray-600'"
+          title="Shows all owned perks"
         >
-          Overview
+          Simple
         </button>
         <button
-          @click="visualMode = 'segmented'"
+          @click="visualMode = 'detailed'"
           class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
-          :class="visualMode === 'segmented'
+          :class="visualMode === 'detailed'
             ? 'bg-purple-600 text-white'
             : 'text-gray-400 hover:text-white hover:bg-gray-600'"
+          title="Shows 1 colored bar for each weapon that has the perk"
         >
-          Segmented
+          Detailed
         </button>
       </div>
     </div>
@@ -71,7 +73,7 @@
                 @mouseleave="hoveredPerkHash = null"
               >
                 <!-- Segmented Bars Background -->
-                <div v-if="visualMode === 'segmented'" class="absolute inset-0 flex h-full w-full opacity-30">
+                <div v-if="visualMode === 'detailed'" class="absolute inset-0 flex h-full w-full opacity-30">
                   <div 
                     v-for="instanceId in getInstancesWithPerk(perk.hash, column.columnIndex)"
                     :key="instanceId"
@@ -80,9 +82,9 @@
                   ></div>
                 </div>
 
-                <!-- Hover Overlay for Segmented -->
-                <div 
-                  v-if="visualMode === 'segmented' && hoveredInstanceId && doesInstanceHavePerk(hoveredInstanceId, perk.hash, column.columnIndex)"
+                <!-- Hover Overlay for Detailed -->
+                <div
+                  v-if="visualMode === 'detailed' && hoveredInstanceId && doesInstanceHavePerk(hoveredInstanceId, perk.hash, column.columnIndex)"
                   class="absolute inset-0 bg-white/10 border-2 border-white/50"
                 ></div>
                 
@@ -202,7 +204,7 @@ const props = defineProps<{
   weapon: DedupedWeapon
 }>()
 
-const visualMode = ref<'overview' | 'segmented'>('overview')
+const visualMode = ref<'simple' | 'detailed'>('simple')
 const hoveredPerkHash = ref<number | null>(null)
 const hoveredInstanceId = ref<string | null>(null)
 
@@ -328,15 +330,15 @@ const isPerkHighlighted = (perkHash: number) => {
 }
 
 const getPerkClasses = (perk: Perk) => {
-  // Overview mode - show owned perks with green tint
-  if (visualMode.value === 'overview') {
+  // Simple mode - show owned perks with green tint
+  if (visualMode.value === 'simple') {
     if (hoveredPerkHash.value === perk.hash) return 'bg-green-600/40'
     if (hoveredInstanceId.value && isPerkHighlighted(perk.hash)) return 'bg-green-600/30'
     if (perk.isOwned) return 'bg-green-900/40'
     return 'bg-gray-800'
   }
 
-  // Segmented mode - ownership shown via colored bars
+  // Detailed mode - ownership shown via colored bars
   if (perk.isOwned) return 'bg-gray-700'
   return 'bg-gray-800'
 }
@@ -351,8 +353,8 @@ const instanceHasPerk = (instId: string, perkHash: number): boolean => {
 const getInstanceClasses = (instId: string) => {
   const base = 'bg-gray-800 border-gray-700'
 
-  // Overview mode - green highlights
-  if (visualMode.value === 'overview') {
+  // Simple mode - green highlights
+  if (visualMode.value === 'simple') {
     if (hoveredInstanceId.value === instId) return 'bg-green-900 border-green-500 ring-1 ring-green-500'
 
     // Highlight if hovered perk is on this instance
@@ -368,7 +370,7 @@ const getInstanceClasses = (instId: string) => {
     return base
   }
 
-  // Segmented mode
+  // Detailed mode
   if (hoveredInstanceId.value === instId) {
     return 'ring-2 ring-white border-transparent'
   }
@@ -386,7 +388,7 @@ const getInstanceClasses = (instId: string) => {
 }
 
 const getInstanceStyle = (instId: string) => {
-  if (visualMode.value === 'segmented') {
+  if (visualMode.value === 'detailed') {
     const color = getInstanceColor(instId)
     return {
       borderLeftWidth: '4px',
