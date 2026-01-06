@@ -15,7 +15,7 @@
           :class="visualMode === 'simple'
             ? 'bg-green-600 text-white'
             : 'text-gray-400 hover:text-white hover:bg-gray-600'"
-          title="Shows all owned perks"
+          title="Shows all owned perks across all rolls"
         >
           Simple
         </button>
@@ -25,7 +25,7 @@
           :class="visualMode === 'detailed'
             ? 'bg-purple-600 text-white'
             : 'text-gray-400 hover:text-white hover:bg-gray-600'"
-          title="Shows 1 colored bar for each weapon that has the perk"
+          title="Shows 1 colored bar for each roll that has that perk"
         >
           Detailed
         </button>
@@ -120,7 +120,7 @@
           >
             <div class="flex items-center justify-between mb-2">
               <span class="font-bold text-sm">Roll {{ index + 1 }}</span>
-              <!-- Power level isn't in WeaponInstance currently, omitted -->
+              <span class="text-[10px] text-gray-500 font-mono">{{ instance.itemInstanceId }}</span>
             </div>
             
             <!-- Full Perk Matrix Tags for Instance -->
@@ -333,12 +333,21 @@ const getPerkClasses = (perk: Perk) => {
   // Simple mode - show owned perks with green tint
   if (visualMode.value === 'simple') {
     if (hoveredPerkHash.value === perk.hash) return 'bg-green-600/40'
-    if (hoveredInstanceId.value && isPerkHighlighted(perk.hash)) return 'bg-green-600/30'
+    if (hoveredInstanceId.value) {
+      // Instance is hovered - highlight its perks, dim others
+      if (isPerkHighlighted(perk.hash)) return 'bg-green-600/30'
+      return 'bg-gray-800/50 opacity-40'
+    }
     if (perk.isOwned) return 'bg-green-900/40'
     return 'bg-gray-800'
   }
 
   // Detailed mode - ownership shown via colored bars
+  if (hoveredInstanceId.value) {
+    // Instance is hovered - highlight its perks, dim others
+    if (isPerkHighlighted(perk.hash)) return 'bg-gray-600'
+    return 'bg-gray-800/50 opacity-40'
+  }
   if (perk.isOwned) return 'bg-gray-700'
   return 'bg-gray-800'
 }
