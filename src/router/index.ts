@@ -27,7 +27,7 @@ const router = createRouter({
       meta: { requiresAuth: true }
     },
     {
-      path: '/playground',
+      path: '/playground/:weaponHash?',
       name: 'playground',
       component: PlaygroundView
     },
