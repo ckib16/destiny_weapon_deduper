@@ -23,22 +23,6 @@
       </div>
     </div>
 
-    <!-- Overview Mode - Stats Summary -->
-    <div v-if="visualMode === 'overview'" class="flex items-center justify-center gap-8 text-sm text-gray-300 py-2">
-      <div class="text-center">
-        <p class="text-lg font-semibold text-green-300">{{ weapon.totalPerksOwned }}</p>
-        <p class="text-xs text-gray-500">Owned perks</p>
-      </div>
-      <div class="text-center">
-        <p class="text-lg font-semibold text-gray-200">{{ weapon.totalPerksPossible }}</p>
-        <p class="text-xs text-gray-500">Possible perks</p>
-      </div>
-      <div class="text-center">
-        <p class="text-lg font-semibold text-purple-300">{{ weapon.completionPercentage }}%</p>
-        <p class="text-xs text-gray-500">Completion</p>
-      </div>
-    </div>
-
     <!-- Unified Grid Layout for ALL Modes -->
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
       
@@ -314,11 +298,24 @@ const isPerkHighlighted = (perkHash: number) => {
 }
 
 const getPerkClasses = (perk: Perk) => {
+  // Overview mode - show owned perks with green tint
+  if (visualMode.value === 'overview') {
+    if (hoveredPerkHash.value === perk.hash) return 'bg-green-600/40'
+    if (hoveredInstanceId.value && isPerkHighlighted(perk.hash)) return 'bg-green-600/30'
+    if (perk.isOwned) return 'bg-green-900/40'
+    return 'bg-gray-800'
+  }
+
+  // Simple highlight mode
   if (visualMode.value === 'simple') {
     if (hoveredPerkHash.value === perk.hash) return 'bg-blue-600/30'
     if (isPerkHighlighted(perk.hash)) return 'bg-blue-600/10'
+    if (perk.isOwned) return 'bg-gray-700'
     return 'bg-gray-800'
   }
+
+  // Segmented mode - ownership shown via colored bars
+  if (perk.isOwned) return 'bg-gray-700'
   return 'bg-gray-800'
 }
 
