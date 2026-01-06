@@ -126,6 +126,23 @@ When managing Inventory I want to know:
   - Mark best roll as "locked"
   - Mark others as "unlocked"
 
+2026-01-05 - 2010L
+  - [x] Weapons Detail view > Overview: move "owned Perks" & "Possible Perks" stats up to top, next to Thumbail & Weapon name so it's there for all visualization modes & standardized
+  - [x] Weapons Detail view
+    - Perk Matrix isn't showing owned perks on any of 3 visualization modes
+    - when hover over perk matrix, the perk and corresponding instances it exists on should be highlighted
+    - Segmented bars visualizarion - only showing for Origin trait column
+
+2026-01-05 - 2220L
+- [ ] Trait tool tips / descriptions when hover over in Perk Matrix as well as Intrinsic Trait in "Notes" section ("Lightweight frame" etc.)
+- [ ] Search bar & filters: how hard to implement something like "Search or Filter by" bar in https://d2foundry.gg/
+    - ![alt text](search.png)
+    - [ ] Filters: Weapon Type, Frame, Trait, Energy, Ammo, Slot, Rarity, Source, Season, Foundry, RPM, Craftable
+    - [ ] Cache past inputs for quicker re-entry like her "Recent Searches" section in image?
+
+
+
+
 
     
 
