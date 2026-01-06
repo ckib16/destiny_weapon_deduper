@@ -539,6 +539,25 @@ export function countPossiblePerks(columns: PerkColumn[]): number {
   return columns.reduce((sum, column) => sum + column.availablePerks.length, 0)
 }
 
+/**
+ * Calculate gear tier range across all instances
+ * Returns { min, max } or { null, null } if no instances have tier data
+ */
+function calculateGearTierRange(instances: WeaponInstance[]): { min: number | null; max: number | null } {
+  const tiers = instances
+    .map(i => i.gearTier)
+    .filter((t): t is number => typeof t === 'number' && t >= 1 && t <= 5)
+
+  if (tiers.length === 0) {
+    return { min: null, max: null }
+  }
+
+  return {
+    min: Math.min(...tiers),
+    max: Math.max(...tiers)
+  }
+}
+
 export function buildDedupedWeapon(
   weaponHash: number,
   instances: WeaponInstance[]
@@ -549,11 +568,13 @@ export function buildDedupedWeapon(
   const completionPercentage = totalPerksPossible > 0
     ? Math.round((totalPerksOwned / totalPerksPossible) * 100)
     : 0
+  const { min: minGearTier, max: maxGearTier } = calculateGearTierRange(instances)
 
   return {
     weaponHash,
     weaponName: weaponParser.getWeaponName(weaponHash),
     weaponIcon: weaponParser.getWeaponIcon(weaponHash),
+    iconWatermark: weaponParser.getWeaponIconWatermark(weaponHash),
     perkMatrix: matrix,
     intrinsicPerks,
     masterworkPerks,
@@ -561,6 +582,8 @@ export function buildDedupedWeapon(
     totalPerksOwned,
     totalPerksPossible,
     completionPercentage,
-    tierType: weaponParser.getWeaponTierType(weaponHash)
+    tierType: weaponParser.getWeaponTierType(weaponHash),
+    minGearTier,
+    maxGearTier
   }
 }

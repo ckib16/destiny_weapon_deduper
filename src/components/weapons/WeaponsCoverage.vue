@@ -123,6 +123,7 @@
           >
             <div class="flex items-center justify-between mb-2">
               <span class="font-bold text-sm">Roll {{ index + 1 }}</span>
+              <span :class="getTierClass(instance.gearTier)" class="text-xs">{{ formatTier(instance.gearTier) }}</span>
               <span class="text-[10px] text-gray-500 font-mono">{{ instance.itemInstanceId }}</span>
             </div>
             
@@ -410,6 +411,21 @@ const getInstanceStyle = (instId: string) => {
     }
   }
   return {}
+}
+
+function formatTier(tier: number | null | undefined): string {
+  if (tier == null) {
+    return 'No Tier'
+  }
+  const stars = '★'.repeat(tier)
+  return `Tier ${tier} ${stars}`
+}
+
+function getTierClass(tier: number | null | undefined): string {
+  if (tier == null) {
+    return 'text-gray-600'
+  }
+  return 'text-gray-400'
 }
 
 </script>

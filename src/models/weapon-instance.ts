@@ -5,6 +5,8 @@ export interface WeaponInstance {
     sockets: SocketInstance[]
   }
   socketPlugsByIndex?: Record<number, number[]>
+  // Gear tier (1-5 stars) - null/undefined for items obtained before Episode Heresy (9.0.0)
+  gearTier?: number | null
 }
 
 export interface SocketInstance {

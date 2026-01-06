@@ -5,6 +5,8 @@ export interface DedupedWeapon {
   weaponHash: number
   weaponName: string
   weaponIcon: string
+  // Season/version watermark overlay (small badge in upper-left corner)
+  iconWatermark?: string
 
   // Merged perk data
   perkMatrix: PerkColumn[]
@@ -21,6 +23,11 @@ export interface DedupedWeapon {
 
   // Rarity (6 = Exotic, 5 = Legendary)
   tierType: number
+
+  // Gear tier range across all instances (1-5 stars)
+  // null means all instances are pre-9.0.0 (no tier data)
+  minGearTier: number | null
+  maxGearTier: number | null
 }
 
 export interface PerkColumn {

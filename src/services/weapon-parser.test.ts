@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { WeaponParser } from './weapon-parser'
 import type { WeaponInstance } from '@/models/weapon-instance'
-import type { DestinyProfileResponse } from '@/api/inventory'
 
 // Mock the manifest service
 vi.mock('./manifest-service', () => ({

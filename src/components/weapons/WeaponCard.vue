@@ -2,11 +2,11 @@
   <div class="rounded-xl border border-gray-700 bg-gray-800 p-5 shadow-sm">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="flex items-start gap-4 min-w-0">
-        <img
-          v-if="weapon.weaponIcon"
-          :src="`https://www.bungie.net${weapon.weaponIcon}`"
+        <WeaponIcon
+          :icon="weapon.weaponIcon"
+          :watermark="weapon.iconWatermark"
           :alt="weapon.weaponName"
-          class="h-14 w-14 rounded"
+          size="lg"
         />
         <div class="min-w-0">
           <h3 class="text-xl font-semibold truncate">{{ weapon.weaponName }}</h3>
@@ -91,6 +91,7 @@
 import type { DedupedWeapon } from '@/models/deduped-weapon'
 import WeaponMatrix from './WeaponMatrix.vue'
 import InstanceList from './InstanceList.vue'
+import WeaponIcon from '@/components/common/WeaponIcon.vue'
 
 defineProps<{
   weapon: DedupedWeapon

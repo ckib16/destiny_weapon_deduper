@@ -4,14 +4,15 @@
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-4">
         <template v-if="weapon">
-          <img
-            v-if="weapon.weaponIcon"
-            :src="`https://www.bungie.net${weapon.weaponIcon}`"
+          <WeaponIcon
+            :icon="weapon.weaponIcon"
+            :watermark="weapon.iconWatermark"
             :alt="weapon.weaponName"
-            class="h-14 w-14 rounded"
+            size="lg"
           />
           <div>
             <h1 class="text-2xl font-bold">{{ weapon.weaponName }}</h1>
+            <p class="text-xs text-gray-500">Hash: {{ weapon.weaponHash }}</p>
             <p class="text-xs text-gray-500">
               {{ weapon.instances.length }} {{ weapon.instances.length === 1 ? 'Copy' : 'Copies' }}<span v-if="subtitle"> {{ subtitle }}</span>
             </p>
@@ -93,6 +94,7 @@ import WeaponsCoverage from '@/components/weapons/WeaponsCoverage.vue'
 import WeaponsGodRoll from '@/components/weapons/WeaponsGodRoll.vue'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import ErrorMessage from '@/components/common/ErrorMessage.vue'
+import WeaponIcon from '@/components/common/WeaponIcon.vue'
 import type { DedupedWeapon } from '@/models/deduped-weapon'
 
 interface Props {

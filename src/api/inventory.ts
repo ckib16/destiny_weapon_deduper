@@ -83,6 +83,8 @@ export interface ItemInstance {
   equipRequiredLevel: number
   unlockHashesRequiredToEquip: number[]
   cannotEquipReason: number
+  // Gear tier (1-5 stars) - null for items obtained before Episode Heresy (9.0.0)
+  gearTier?: number | null
   energy?: {
     energyTypeHash: number
     energyType: number

@@ -111,11 +111,15 @@ export class WeaponParser {
       // Get socket data for this instance
       const socketData = profile.itemComponents?.sockets?.data?.[item.itemInstanceId]
       const reusablePlugs = profile.itemComponents?.reusablePlugs?.data?.[item.itemInstanceId]
+      const instanceData = profile.itemComponents?.instances?.data?.[item.itemInstanceId]
 
       if (!socketData || !socketData.sockets) {
         console.warn(`No socket data for weapon instance ${item.itemInstanceId}`)
         continue
       }
+
+      // Get gear tier from instance data (1-5, or null for pre-9.0.0 items)
+      const gearTier = instanceData?.gearTier
 
       // Create weapon instance
       const socketPlugsByIndex: Record<number, number[]> = {}
@@ -156,7 +160,8 @@ export class WeaponParser {
             isEnabled: socket.isEnabled
           }))
         },
-        socketPlugsByIndex: Object.keys(socketPlugsByIndex).length ? socketPlugsByIndex : undefined
+        socketPlugsByIndex: Object.keys(socketPlugsByIndex).length ? socketPlugsByIndex : undefined,
+        gearTier
       }
 
       weapons.push(weaponInstance)
@@ -223,6 +228,26 @@ export class WeaponParser {
   getWeaponTierType(itemHash: number): number {
     const weaponDef = manifestService.getInventoryItem(itemHash)
     return weaponDef?.inventory?.tierType || 0
+  }
+
+  /**
+   * Get weapon icon watermark (season/version badge overlay)
+   * Returns the version-specific watermark if available, otherwise the base watermark
+   */
+  getWeaponIconWatermark(itemHash: number): string | undefined {
+    const weaponDef = manifestService.getInventoryItem(itemHash)
+    if (!weaponDef) return undefined
+
+    // Check for version-specific watermark first (for reissued weapons)
+    const versionWatermarks = weaponDef.quality?.displayVersionWatermarkIcons
+    const currentVersion = weaponDef.quality?.currentVersion
+    if (versionWatermarks?.length && currentVersion !== undefined) {
+      const versionWatermark = versionWatermarks[currentVersion]
+      if (versionWatermark) return versionWatermark
+    }
+
+    // Fall back to the base watermark
+    return weaponDef.iconWatermark || undefined
   }
 }
 

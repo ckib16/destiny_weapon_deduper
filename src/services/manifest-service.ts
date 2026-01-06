@@ -24,6 +24,16 @@ export interface DestinyInventoryItemDefinition extends ManifestDefinition {
   itemTypeDisplayName: string
   itemType: number
   itemSubType: number
+  // Watermark overlays for season/version indicators
+  iconWatermark?: string
+  iconWatermarkShelved?: string
+  // Season association
+  seasonHash?: number
+  // Quality block with version-specific watermarks
+  quality?: {
+    displayVersionWatermarkIcons?: string[]
+    currentVersion?: number
+  }
   inventory?: {
     tierType: number
     tierTypeName: string
