@@ -3,6 +3,7 @@
     :weapon="selectedWeapon"
     :loading="weaponsStore.loading"
     :error="weaponsStore.error"
+    :initial-tab="initialTab"
     back-label="Back to all weapons"
     loading-message="Loading your arsenal..."
     @back="router.push('/')"
@@ -24,6 +25,10 @@ const authStore = useAuthStore()
 const weaponHash = computed(() => {
   const raw = route.params.weaponHash
   return typeof raw === 'string' ? Number(raw) : Array.isArray(raw) ? Number(raw[0]) : NaN
+})
+
+const initialTab = computed<'coverage' | 'godroll'>(() => {
+  return route.query.tab === 'godrolls' ? 'godroll' : 'coverage'
 })
 
 const selectedWeapon = computed(() => {

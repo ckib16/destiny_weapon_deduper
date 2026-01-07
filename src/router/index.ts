@@ -6,6 +6,7 @@ import CallbackView from '@/views/CallbackView.vue'
 import WeaponDetailView from '@/views/WeaponDetailView.vue'
 import PlaygroundView from '@/views/PlaygroundView.vue'
 import SettingsView from '@/views/SettingsView.vue'
+import GodRollsView from '@/views/GodRollsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -41,6 +42,12 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView
+    },
+    {
+      path: '/godrolls',
+      name: 'godrolls',
+      component: GodRollsView,
+      meta: { requiresAuth: true }
     }
   ]
 })

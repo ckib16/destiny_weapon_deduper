@@ -106,23 +106,25 @@ interface Props {
   fallbackTitle?: string
   loadingMessage?: string
   notFoundMessage?: string
+  initialTab?: 'coverage' | 'godroll'
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   loading: false,
   error: null,
   backLabel: 'Back to all weapons',
   subtitle: '',
   fallbackTitle: 'Weapon Details',
   loadingMessage: 'Loading...',
-  notFoundMessage: 'Weapon not found. Try returning to the list.'
+  notFoundMessage: 'Weapon not found. Try returning to the list.',
+  initialTab: 'coverage'
 })
 
 defineEmits<{
   back: []
 }>()
 
-const activeTab = ref<'coverage' | 'godroll'>('coverage')
+const activeTab = ref<'coverage' | 'godroll'>(props.initialTab)
 
 const tabs = [
   { id: 'coverage', label: 'Perk Coverage' },
