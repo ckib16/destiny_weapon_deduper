@@ -175,6 +175,45 @@ Workflow
 
 **Note:** Admin UI changes are temporary until committed. Refreshing loses unsaved work.
 
+##### God Roll Data Architecture
+
+The app has **two separate data sources** for god rolls:
+
+**1. Community Picks** (`data/community-picks.json`)
+- Static JSON file committed to the repo
+- Admin-curated recommendations from streamers/community
+- Loaded via `communityPicksService.getPicksForWeapon(weaponHash)`
+- Displayed in the "Community Picks" collapsible section on weapon detail
+- Users can click "Add to my God Rolls" to copy a pick to their local storage
+
+**2. Saved God Rolls** (localStorage `d3_godroll_<weaponHash>`)
+- User's personal saved god rolls stored in browser localStorage
+- Created via the God Roll Creator on weapon detail page
+- Managed via `godRollStorageService`
+- Can include rolls imported via Settings page (JSON import)
+- Displayed in "Saved God Rolls" section and in God Roll Manager view
+
+**God Roll Manager View** (`/godrolls`)
+- Shows all saved god rolls from localStorage across all weapons
+- Accessible from nav bar (auth-required)
+- Search by weapon name, sort by A-Z or Most Profiles
+- Click weapon → opens weapon detail at "Set your God Rolls" tab
+- For weapons not in user's inventory, shows placeholder view with saved god roll info
+
+**Import/Export Flow**
+- Export: Settings → "Export God Rolls" → Downloads JSON with all localStorage rolls
+- Import: Settings → "Import God Rolls" → Merges/replaces localStorage rolls
+- YouTube Agent: Python script extracts god rolls from YouTube transcripts → outputs D3-compatible JSON for import
+
+**Key Files:**
+- `src/services/godroll-storage-service.ts` - localStorage CRUD operations
+- `src/services/community-picks-service.ts` - Fetches community-picks.json
+- `src/components/weapons/CommunityPicks.vue` - Community picks UI with admin mode
+- `src/components/weapons/WeaponsGodRoll.vue` - God Roll Creator + saved profiles
+- `src/views/GodRollsView.vue` - God Roll Manager listing all saved rolls
+- `src/views/SettingsView.vue` - Import/export functionality
+- `scripts/youtube-agent/` - YouTube transcript → god roll extractor
+
 ### Future goals
 Front-end overhaul
 - let Claude use it's front-end skill and see what it looks like
