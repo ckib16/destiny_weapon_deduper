@@ -52,6 +52,21 @@
         >
           <h3 class="font-bold text-gray-200 mb-2">{{ profile.name }}</h3>
 
+          <!-- Source Info -->
+          <div v-if="profile.source" class="text-xs text-gray-500 mb-2">
+            <span class="text-purple-400">{{ profile.source.author }}</span>
+            <span v-if="profile.source.videoTitle"> · {{ profile.source.videoTitle }}</span>
+            <a
+              v-if="profile.source.timestampUrl"
+              :href="profile.source.timestampUrl"
+              target="_blank"
+              class="ml-2 text-blue-400 hover:text-blue-300"
+              @click.stop
+            >
+              Watch ↗
+            </a>
+          </div>
+
           <!-- Notes -->
           <p v-if="profile.notes" class="text-xs text-gray-400 mb-3 line-clamp-3">
             {{ profile.notes }}
@@ -85,12 +100,21 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { manifestService } from '@/services/manifest-service'
 
+interface VideoSource {
+  author: string
+  videoTitle: string
+  timestamp?: string
+  timestampUrl?: string
+  videoUrl: string
+}
+
 interface SavedProfile {
   id: string
   name: string
   notes?: string
   selection: Record<number, 'OR' | 'AND'>
   isFromCommunityPick?: boolean
+  source?: VideoSource
 }
 
 const props = defineProps<{

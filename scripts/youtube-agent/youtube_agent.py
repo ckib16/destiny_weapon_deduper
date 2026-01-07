@@ -80,7 +80,7 @@ def get_playlist_videos(playlist_url):
     """Extract video info from a YouTube playlist."""
     print(f"\n🔍 Scanning playlist...")
     ydl_opts = {
-        'extract_flat': True,
+        'extract_flat': 'in_playlist',
         'quiet': True,
         'ignoreerrors': True,
     }
@@ -89,13 +89,58 @@ def get_playlist_videos(playlist_url):
         info = ydl.extract_info(playlist_url, download=False)
         if 'entries' in info:
             for entry in info['entries']:
+                video_id = entry.get('id')
                 video_data.append({
                     'title': entry.get('title', 'Unknown Video'),
-                    'url': entry.get('url'),
-                    'id': entry.get('id')
+                    'url': entry.get('url') or f"https://www.youtube.com/watch?v={video_id}",
+                    'id': video_id,
+                    'channel': entry.get('channel') or entry.get('uploader') or 'Unknown',
                 })
     print(f"✅ Found {len(video_data)} videos.")
     return video_data
+
+
+def get_video_metadata(video_url):
+    """Get full video metadata including channel name."""
+    ydl_opts = {
+        'skip_download': True,
+        'quiet': True,
+        'no_warnings': True,
+    }
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            info = ydl.extract_info(video_url, download=False)
+            return {
+                'channel': info.get('channel') or info.get('uploader') or 'Unknown',
+                'title': info.get('title', 'Unknown Video'),
+                'id': info.get('id'),
+            }
+    except Exception:
+        return None
+
+
+def timestamp_to_seconds(timestamp_str):
+    """Convert MM:SS or HH:MM:SS to seconds."""
+    if not timestamp_str:
+        return None
+    parts = timestamp_str.strip().split(':')
+    try:
+        if len(parts) == 2:
+            return int(parts[0]) * 60 + int(parts[1])
+        elif len(parts) == 3:
+            return int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
+    except ValueError:
+        pass
+    return None
+
+
+def build_timestamped_url(video_id, timestamp_str):
+    """Build a YouTube URL with timestamp parameter."""
+    base_url = f"https://www.youtube.com/watch?v={video_id}"
+    seconds = timestamp_to_seconds(timestamp_str)
+    if seconds:
+        return f"{base_url}&t={seconds}s"
+    return base_url
 
 def get_transcript_with_ytdlp(video_url):
     """Download subtitles for a video using yt-dlp."""
@@ -198,10 +243,20 @@ def lookup_hash(name, lookup_dict, threshold=80):
 
     return None, False
 
-def convert_to_d3_format(god_rolls, video_title, video_url):
-    """Convert parsed god rolls to D3 import format."""
+def convert_to_d3_format(god_rolls, video_info):
+    """Convert parsed god rolls to D3 import format.
+
+    Args:
+        god_rolls: List of god roll dicts from Gemini
+        video_info: Dict with 'title', 'id', 'channel', 'url' keys
+    """
     results = []
     uncertain = []
+
+    video_title = video_info.get('title', 'Unknown Video')
+    video_id = video_info.get('id', '')
+    video_channel = video_info.get('channel', 'Unknown')
+    video_url = video_info.get('url', '')
 
     for roll in god_rolls:
         weapon_name = roll.get('weapon', '')
@@ -232,11 +287,23 @@ def convert_to_d3_format(god_rolls, video_title, video_url):
             notes = roll.get('notes', '')
             timestamp = roll.get('timestamp', '')
 
+            # Build URLs
+            timestamped_url = build_timestamped_url(video_id, timestamp) if video_id else video_url
+            base_url = f"https://www.youtube.com/watch?v={video_id}" if video_id else video_url
+
             profile = {
                 "id": str(uuid.uuid4()),
                 "name": f"{mode} Roll",
-                "notes": f"{notes} (from: {video_title} @ {timestamp})",
-                "selection": selection
+                "notes": notes,
+                "selection": selection,
+                # Video source metadata
+                "source": {
+                    "author": video_channel,
+                    "videoTitle": video_title,
+                    "timestamp": timestamp,
+                    "timestampUrl": timestamped_url,
+                    "videoUrl": base_url,
+                }
             }
 
             # Check if weapon already exists in results
@@ -300,8 +367,22 @@ if __name__ == "__main__":
 
         title = video['title']
         url = video['url']
+        video_id = video.get('id', '')
+        channel = video.get('channel', '')
 
         print(f"\n[{i+1}/{len(videos)}] {title}")
+
+        # If channel is missing from playlist data, fetch full metadata
+        if not channel or channel == 'Unknown':
+            print(f"   📡 Fetching video metadata...")
+            metadata = get_video_metadata(url)
+            if metadata:
+                channel = metadata.get('channel', 'Unknown')
+                if not video_id:
+                    video_id = metadata.get('id', '')
+
+        if channel and channel != 'Unknown':
+            print(f"   👤 Channel: {channel}")
 
         transcript = get_transcript_with_ytdlp(url)
 
@@ -330,7 +411,15 @@ if __name__ == "__main__":
 
         print(f"   ✅ Found {len(god_rolls)} god roll(s)")
 
-        results, uncertain = convert_to_d3_format(god_rolls, title, url)
+        # Build video info for D3 export
+        video_info = {
+            'title': title,
+            'id': video_id,
+            'channel': channel,
+            'url': url,
+        }
+
+        results, uncertain = convert_to_d3_format(god_rolls, video_info)
         all_results.extend(results)
 
         if uncertain:

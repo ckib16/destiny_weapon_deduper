@@ -1,5 +1,14 @@
 import { manifestService } from './manifest-service'
 
+// Video source metadata for imported god rolls
+export interface VideoSource {
+  author: string
+  videoTitle: string
+  timestamp?: string
+  timestampUrl?: string
+  videoUrl: string
+}
+
 // Match the SavedProfile interface from WeaponsGodRoll.vue
 export interface SavedProfile {
   id: string
@@ -7,6 +16,7 @@ export interface SavedProfile {
   notes?: string
   selection: Record<number, 'OR' | 'AND'>
   isFromCommunityPick?: boolean
+  source?: VideoSource  // YouTube video source info
 }
 
 export interface GodRollExport {

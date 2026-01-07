@@ -75,9 +75,13 @@
           </div>
         </div>
 
-        <!-- Notes Preview -->
-        <div v-if="getFirstNote(weapon.profiles)" class="mt-3 text-xs text-gray-500 truncate pl-16">
-          {{ getFirstNote(weapon.profiles) }}
+        <!-- Source Info (Author + Notes) -->
+        <div v-if="getFirstSource(weapon.profiles) || getFirstNote(weapon.profiles)" class="mt-3 text-xs text-gray-500 truncate pl-16">
+          <span v-if="getFirstSource(weapon.profiles)" class="text-purple-400">
+            {{ getFirstSource(weapon.profiles) }}
+          </span>
+          <span v-if="getFirstSource(weapon.profiles) && getFirstNote(weapon.profiles)"> · </span>
+          <span v-if="getFirstNote(weapon.profiles)">{{ getFirstNote(weapon.profiles) }}</span>
         </div>
       </RouterLink>
     </div>
@@ -140,6 +144,13 @@ function getProfileClass(name: string): string {
 function getFirstNote(profiles: SavedProfile[]): string | null {
   for (const p of profiles) {
     if (p.notes?.trim()) return p.notes
+  }
+  return null
+}
+
+function getFirstSource(profiles: SavedProfile[]): string | null {
+  for (const p of profiles) {
+    if (p.source?.author) return p.source.author
   }
   return null
 }
